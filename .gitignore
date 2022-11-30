@@ -563,6 +563,10 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# Perforce config
+*.p4config
+*.p4settings
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
