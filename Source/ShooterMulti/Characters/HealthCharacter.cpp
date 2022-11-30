@@ -10,6 +10,8 @@
 #include "Engine.h"
 #include "../Controllers/ShooterController.h"
 
+// COMMENTARY SECOND
+
 AHealthCharacter::AHealthCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	//Create Punch Collision
