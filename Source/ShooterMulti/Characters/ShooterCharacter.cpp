@@ -96,7 +96,8 @@ void AShooterCharacter::BeginPlay()
 	
 	RunSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
-	Invincibility(Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode())->InvincibilityTime);
+	if (ADeathMatchGM* GM = Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode()))
+		Invincibility(GM->InvincibilityTime);
 }
 
 void AShooterCharacter::Tick(float DeltaTime)
@@ -347,5 +348,6 @@ void AShooterCharacter::FinishDisapear()
 
 	Super::FinishDisapear();
 
-	Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode())->Respawn(PlayerController);
+	if (ADeathMatchGM* GM = Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode()))
+		GM->Respawn(PlayerController);
 }

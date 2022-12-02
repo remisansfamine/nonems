@@ -18,12 +18,11 @@ void ADeathMatchGS::BeginPlay()
 	OnGameRestart.AddLambda([this]() { Reset(); });
 
 	GameMode = Cast<ADeathMatchGM>(AuthorityGameMode);
-
-	check(GameMode && "GameMode nullptr: Cast as ADeathMatchGM failed.");
-
+	if (!GameMode)
+		return;
+	
 	CurrentTime = GameMode->GameTime;
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ADeathMatchGS::AdvanceTimer, 1.0f, true);
-
 }
 
 void ADeathMatchGS::AdvanceTimer()
@@ -44,6 +43,9 @@ void ADeathMatchGS::AdvanceTimer()
 
 void ADeathMatchGS::AddScore(ETeam Team)
 {
+	if (!GameMode)
+		return;
+	
 	if (Team == ETeam::Red && ++RedTeamScore == GameMode->MaxKill)
 		UpdateEndHud(ETeam::Red);
 	else if (Team == ETeam::Blue && ++BlueTeamScore == GameMode->MaxKill)
@@ -66,9 +68,7 @@ void ADeathMatchGS::RemovePlayerState(APlayerState* PlayerState)
 
 bool ADeathMatchGS::CanAddAI()
 {
-	return Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode())->MaxAIPerPlayer* PlayerArray.Num() > CurrentAICount;
-
-	return false;
+	return GameMode && GameMode->MaxAIPerPlayer* PlayerArray.Num() > CurrentAICount;
 }
 
 void ADeathMatchGS::AddAI()
@@ -103,6 +103,9 @@ void ADeathMatchGS::Reset()
 
 void ADeathMatchGS::ResetAfterDelay()
 {
+	if (!GameMode)
+		return;
+	
 	CurrentTime = GameMode->GameTime;
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ADeathMatchGS::AdvanceTimer, 1.0f, true);
 
