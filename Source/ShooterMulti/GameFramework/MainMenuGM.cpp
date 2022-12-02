@@ -5,13 +5,10 @@
 
 void AMainMenuGM::LaunchServerInstance()
 {
-	FString ProjectPath = " /k ";
-	ProjectPath.Append(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()));
-	//ProjectPath.Append("StartDedicatedServer.bat");
-	ProjectPath.Append("StartServerThroughCMD.bat");
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *ProjectPath);
+	FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+	ProjectPath.Append("StartDedicatedServer.bat");
 
-	FProcHandle WorkHandle = FPlatformProcess::CreateProc(TEXT("cmd"), *ProjectPath, false, false, false, nullptr, 0, nullptr, nullptr);
+	FProcHandle WorkHandle = FPlatformProcess::CreateProc(*ProjectPath, nullptr, false, false, false, nullptr, 0, nullptr, nullptr);
 
 	if (WorkHandle.IsValid())
 	{
