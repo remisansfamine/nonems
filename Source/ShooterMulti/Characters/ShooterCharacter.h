@@ -26,7 +26,7 @@ class SHOOTERMULTI_API AShooterCharacter : public AHealthCharacter
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Movement)
-	class UShooterCharacterMovement* ShooterCharacterMovement = nullptr;
+	class UShooterCharacterMovement* ShooterCharacterMovement;
 	
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Character|Shooter")
 	UWeaponComponent* Weapon;
@@ -61,26 +61,21 @@ protected:
 	void InvincibilityFX_Implementation(float Duration) {};
 
 public:
-
 	bool bIsShooting = false;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsAiming, Category=Character)
+	uint32 bIsAiming:1;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter")
-	float SprintSpeed = 1000.f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter")
-	float AimWalkSpeed = 180.f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter")
-	float ReloadWalkSpeed = 200.f;
-
-	UPROPERTY(BlueprintReadOnly)
-	float RunSpeed = 0.0f;
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsSprinting, Category=Character)
+	uint32 bIsSprinting:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MinSprintMagnitude = .3f;
 
 	AShooterCharacter(const FObjectInitializer& ObjectInitializer);
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	EShooterCharacterState GetState() const;
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
@@ -139,4 +134,15 @@ public:
 
 	void StartDisapear() override;
 	void FinishDisapear() override;
+	
+	/** Handle Aiming replicated from server */
+	UFUNCTION()
+	virtual void OnRep_IsAiming();
+
+	/** Handle Sprinting replicated from server */
+	UFUNCTION()
+	virtual void OnRep_IsSprinting();
+
+	virtual void OnStartAim();
+	virtual void OnEndAim();
 };

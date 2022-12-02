@@ -9,9 +9,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharacterMovement>(AShooterCharacter::CharacterMovementComponentName))
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharacterMovement>(CharacterMovementComponentName))
 {
 	DisapearingDelay = 1.5f;
 
@@ -33,6 +34,13 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 	Camera->SetupAttachment(RootComponent);
 
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AShooterCharacter, bIsAiming);
+	DOREPLIFETIME(AShooterCharacter, bIsSprinting);
 }
 
 EShooterCharacterState AShooterCharacter::GetState() const
@@ -89,8 +97,6 @@ void AShooterCharacter::BeginPlay()
 	OnTeamSwitch.AddLambda([this]() { RefreshTeamHUD(Team); });
 	
 	Super::BeginPlay();
-	
-	RunSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
 	if (ADeathMatchGM* GM = Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode()))
 		Invincibility(GM->InvincibilityTime);
@@ -134,7 +140,7 @@ void AShooterCharacter::StartSprint()
 	else
 		SetState(EShooterCharacterState::Sprint);
 
-	ShooterCharacterMovement->SprintPressed();
+	ShooterCharacterMovement->StartSprinting();
 }
 
 void AShooterCharacter::EndSprint()
@@ -147,7 +153,7 @@ void AShooterCharacter::EndSprint()
 	else
 		SetState(EShooterCharacterState::IdleRun);
 
-	ShooterCharacterMovement->SprintReleased();
+	ShooterCharacterMovement->StopSprinting();
 }
 
 void AShooterCharacter::StartJump()
@@ -180,12 +186,8 @@ void AShooterCharacter::StartAim()
 {
 	if (State != EShooterCharacterState::IdleRun)
 		return;
-	
-	SetState(EShooterCharacterState::Aim);
 
-	GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
-
-	Camera->SwitchToAimCamera();
+	ShooterCharacterMovement->Safe_bWantsToAim = true;
 }
 
 void AShooterCharacter::EndAim()
@@ -193,11 +195,7 @@ void AShooterCharacter::EndAim()
 	if (State != EShooterCharacterState::Aim)
 		return;
 
-	SetState(PrevState);
-	
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-	
-	Camera->SwitchToWalkCamera();
+	ShooterCharacterMovement->Safe_bWantsToAim = false;
 }
 
 void AShooterCharacter::StartShoot()
@@ -224,8 +222,8 @@ void AShooterCharacter::StartReload()
 			return;
 
 		SetState(EShooterCharacterState::Reload);
-		
-		GetCharacterMovement()->MaxWalkSpeed = ReloadWalkSpeed;
+
+		ShooterCharacterMovement->StartReloading();
 	}
 }
 
@@ -235,8 +233,8 @@ void AShooterCharacter::EndReload()
 		return;
 
 	SetState(EShooterCharacterState::IdleRun);
-	
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+
+	ShooterCharacterMovement->StopReloading();
 
 	if(Weapon)
 		Weapon->Reload();
@@ -248,7 +246,7 @@ void AShooterCharacter::AbortReload()
 
 	SetState(EShooterCharacterState::IdleRun);
 
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	ShooterCharacterMovement->StopReloading();
 }
 
 void AShooterCharacter::Falling()
@@ -346,4 +344,42 @@ void AShooterCharacter::FinishDisapear()
 
 	if (ADeathMatchGM* GM = Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode()))
 		GM->Respawn(PlayerController);
+}
+
+void AShooterCharacter::OnRep_IsAiming()
+{
+	if (!ShooterCharacterMovement)
+		return;
+	
+	if (bIsAiming)
+	{
+		ShooterCharacterMovement->Safe_bWantsToAim = true;
+		ShooterCharacterMovement->StartAiming(true);
+	}
+	else
+	{
+		ShooterCharacterMovement->Safe_bWantsToAim = false;
+		ShooterCharacterMovement->StopAiming(true);
+	}
+	
+	ShooterCharacterMovement->bNetworkUpdateReceived = true;
+}
+
+void AShooterCharacter::OnRep_IsSprinting()
+{
+	
+}
+
+void AShooterCharacter::OnEndAim()
+{
+	SetState(PrevState);
+
+	Camera->SwitchToWalkCamera();
+}
+
+void AShooterCharacter::OnStartAim()
+{
+	SetState(EShooterCharacterState::Aim);
+	
+	Camera->SwitchToAimCamera();
 }
