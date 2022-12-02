@@ -13,5 +13,8 @@ UCLASS()
 class SHOOTERMULTI_API AMainMenuGM : public AGameMode
 {
 	GENERATED_BODY()
-	
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void LaunchServerInstance();
 };
