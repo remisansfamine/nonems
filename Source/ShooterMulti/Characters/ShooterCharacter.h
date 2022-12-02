@@ -25,7 +25,9 @@ class SHOOTERMULTI_API AShooterCharacter : public AHealthCharacter
 	GENERATED_BODY()
 
 protected:
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Movement)
+	class UShooterCharacterMovement* ShooterCharacterMovement = nullptr;
+	
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Character|Shooter")
 	UWeaponComponent* Weapon;
 
@@ -77,7 +79,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MinSprintMagnitude = .3f;
 
-	AShooterCharacter();
+	AShooterCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	EShooterCharacterState GetState() const;

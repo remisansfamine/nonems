@@ -1,6 +1,5 @@
 #include "ShooterController.h"
 #include "../Characters/ShooterCharacter.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 void AShooterController::BeginPlayingState()
 {
@@ -48,8 +47,7 @@ void AShooterController::MoveForward(float Value)
 }
 void AShooterController::MoveRight(float Value)
 {
-	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead()	&& ShooterCharacter->GetState() != EShooterCharacterState::Sprint
-																	&& ShooterCharacter->GetState() != EShooterCharacterState::PushButton)
+	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead() && ShooterCharacter->GetState() != EShooterCharacterState::PushButton)
 	{
 		FRotator Rotation = GetControlRotation();
 		Rotation.Pitch = 0.f;

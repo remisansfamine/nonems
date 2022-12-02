@@ -2,7 +2,7 @@
 #include "../Animations/ShooterCharacterAnim.h"
 #include "../GameFramework/PlayerGI.h"
 #include "../LD/EnemySpawnerButton.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "../Movements/ShooterCharacterMovement.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/UObjectGlobals.h"
 #include "Animation/AnimBlueprint.h"
@@ -10,16 +10,12 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 
-AShooterCharacter::AShooterCharacter()
+AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharacterMovement>(AShooterCharacter::CharacterMovementComponentName))
 {
 	DisapearingDelay = 1.5f;
 
-	// Animation is set in ShooterCharacter_BP to fix build.
-	//// Set Animations
-	//ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimContainer(TEXT("AnimBlueprint'/Game/Blueprints/Animations/ShooterAnim_BP.ShooterAnim_BP'"));
-
-	//if (AnimContainer.Succeeded())
-	//	GetMesh()->SetAnimInstanceClass(AnimContainer.Object->GeneratedClass);
+	ShooterCharacterMovement = Cast<UShooterCharacterMovement>(GetCharacterMovement());
 
 	// Create Weapon
 	Weapon = CreateDefaultSubobject<UWeaponComponent>("Rifle");
@@ -138,7 +134,7 @@ void AShooterCharacter::StartSprint()
 	else
 		SetState(EShooterCharacterState::Sprint);
 
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	ShooterCharacterMovement->SprintPressed();
 }
 
 void AShooterCharacter::EndSprint()
@@ -151,7 +147,7 @@ void AShooterCharacter::EndSprint()
 	else
 		SetState(EShooterCharacterState::IdleRun);
 
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	ShooterCharacterMovement->SprintReleased();
 }
 
 void AShooterCharacter::StartJump()

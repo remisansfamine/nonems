@@ -2,15 +2,16 @@
 
 #include "GameFramework/PlayerController.h"
 #include "../GameFramework/DeathMatchGS.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ShooterController.generated.h"
 
 UCLASS()
 class SHOOTERMULTI_API AShooterController : public APlayerController
 {
 	GENERATED_BODY()
-	
-protected:
 
+protected:
+	UPROPERTY()
 	class AShooterCharacter* ShooterCharacter = nullptr;
 
 	virtual void BeginPlayingState() override;
