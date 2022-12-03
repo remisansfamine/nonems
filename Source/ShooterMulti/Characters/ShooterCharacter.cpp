@@ -124,36 +124,12 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 void AShooterCharacter::StartSprint()
 {
-	if (bIsShooting)
-		EndShoot();
-
-	if (State == EShooterCharacterState::Reload)
-		AbortReload();
-	else if (State == EShooterCharacterState::Aim)
-		EndAim();
-
-	if (State != EShooterCharacterState::IdleRun && State != EShooterCharacterState::Jump)
-		return;
-
-	if (State == EShooterCharacterState::Jump)
-		PrevState = EShooterCharacterState::Sprint;
-	else
-		SetState(EShooterCharacterState::Sprint);
-
-	ShooterCharacterMovement->StartSprinting();
+	ShooterCharacterMovement->Safe_bWantsToSprint = true;
 }
 
 void AShooterCharacter::EndSprint()
 {
-	if (State != EShooterCharacterState::Sprint && State != EShooterCharacterState::Jump)
-		return;
-
-	if (State == EShooterCharacterState::Jump)
-		PrevState = EShooterCharacterState::IdleRun;
-	else
-		SetState(EShooterCharacterState::IdleRun);
-
-	ShooterCharacterMovement->StopSprinting();
+	ShooterCharacterMovement->Safe_bWantsToSprint = false;
 }
 
 void AShooterCharacter::StartJump()
@@ -211,34 +187,14 @@ void AShooterCharacter::EndShoot()
 
 void AShooterCharacter::StartReload()
 {
-	if (Weapon && Weapon->AmmoCount > 0 && Weapon->WeaponMagazineSize > Weapon->LoadedAmmo)
-	{
-		if (State == EShooterCharacterState::Aim)
-			EndAim();
-		else if (bIsShooting)
-			bIsShooting = false;
-
-		if (State != EShooterCharacterState::IdleRun)
-			return;
-
-		SetState(EShooterCharacterState::Reload);
-
-		ShooterCharacterMovement->StartReloading();
-	}
+	ShooterCharacterMovement->Safe_bWantsToReload = true;
 }
 
 void AShooterCharacter::EndReload()
 {
-	if (State != EShooterCharacterState::Reload)
-		return;
-
-	SetState(EShooterCharacterState::IdleRun);
-
-	ShooterCharacterMovement->StopReloading();
-
-	if(Weapon)
-		Weapon->Reload();
+	ShooterCharacterMovement->Safe_bWantsToReload = false;
 }
+
 void AShooterCharacter::AbortReload()
 {
 	if (State != EShooterCharacterState::Reload)
@@ -350,24 +306,34 @@ void AShooterCharacter::OnRep_IsAiming()
 {
 	if (!ShooterCharacterMovement)
 		return;
-	
-	if (bIsAiming)
-	{
-		ShooterCharacterMovement->Safe_bWantsToAim = true;
-		ShooterCharacterMovement->StartAiming(true);
-	}
-	else
-	{
-		ShooterCharacterMovement->Safe_bWantsToAim = false;
-		ShooterCharacterMovement->StopAiming(true);
-	}
-	
+
+	bIsAiming ? ShooterCharacterMovement->StartAiming(true) : ShooterCharacterMovement->StopAiming(true);
 	ShooterCharacterMovement->bNetworkUpdateReceived = true;
 }
 
 void AShooterCharacter::OnRep_IsSprinting()
 {
+	if (!ShooterCharacterMovement)
+		return;
+
+	bIsSprinting ? ShooterCharacterMovement->StartSprinting(true) : ShooterCharacterMovement->StopSprinting(true);
+	ShooterCharacterMovement->bNetworkUpdateReceived = true;
+}
+
+void AShooterCharacter::OnRep_IsReloading()
+{
+	if (!ShooterCharacterMovement)
+		return;
+
+	bIsReloading ? ShooterCharacterMovement->StartReloading(true) : ShooterCharacterMovement->StopReloading(true);
+	ShooterCharacterMovement->bNetworkUpdateReceived = true;
+}
+
+void AShooterCharacter::OnStartAim()
+{
+	SetState(EShooterCharacterState::Aim);
 	
+	Camera->SwitchToAimCamera();
 }
 
 void AShooterCharacter::OnEndAim()
@@ -377,9 +343,58 @@ void AShooterCharacter::OnEndAim()
 	Camera->SwitchToWalkCamera();
 }
 
-void AShooterCharacter::OnStartAim()
+void AShooterCharacter::OnStartSprint()
 {
-	SetState(EShooterCharacterState::Aim);
-	
-	Camera->SwitchToAimCamera();
+	if (bIsShooting)
+		EndShoot();
+
+	if (State == EShooterCharacterState::Reload)
+		AbortReload();
+	else if (State == EShooterCharacterState::Aim)
+		EndAim();
+
+	if (State != EShooterCharacterState::IdleRun && State != EShooterCharacterState::Jump)
+		return;
+
+	if (State == EShooterCharacterState::Jump)
+		PrevState = EShooterCharacterState::Sprint;
+	else
+		SetState(EShooterCharacterState::Sprint);
 }
+
+void AShooterCharacter::OnEndSprint()
+{
+	if (State == EShooterCharacterState::Jump)
+		PrevState = EShooterCharacterState::IdleRun;
+	else
+		SetState(EShooterCharacterState::IdleRun);
+}
+
+void AShooterCharacter::OnStartReload()
+{
+	if (Weapon && Weapon->AmmoCount > 0 && Weapon->WeaponMagazineSize > Weapon->LoadedAmmo)
+	{
+		if (State == EShooterCharacterState::Aim)
+			EndAim();
+		else if (bIsShooting)
+			bIsShooting = false;
+
+		if (State != EShooterCharacterState::IdleRun)
+			return;
+
+		SetState(EShooterCharacterState::Reload);
+	}
+}
+
+void AShooterCharacter::OnEndReload()
+{
+	if (State != EShooterCharacterState::Reload)
+		return;
+
+	SetState(EShooterCharacterState::IdleRun);
+
+	if(Weapon)
+		Weapon->Reload();
+}
+
+

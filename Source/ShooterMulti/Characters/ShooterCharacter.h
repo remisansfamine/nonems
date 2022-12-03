@@ -50,9 +50,9 @@ protected:
 
 	void PlayPunchAnim();
 
-	void Falling() override;
+	virtual void Falling() override;
 
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	void Invincibility(float Duration);
 
@@ -69,12 +69,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsSprinting, Category=Character)
 	uint32 bIsSprinting:1;
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsReloading, Category=Character)
+	uint32 bIsReloading:1;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MinSprintMagnitude = .3f;
 
 	AShooterCharacter(const FObjectInitializer& ObjectInitializer);
 
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	EShooterCharacterState GetState() const;
@@ -136,13 +139,20 @@ public:
 	void FinishDisapear() override;
 	
 	/** Handle Aiming replicated from server */
-	UFUNCTION()
-	virtual void OnRep_IsAiming();
+	UFUNCTION() virtual void OnRep_IsAiming();
 
 	/** Handle Sprinting replicated from server */
-	UFUNCTION()
-	virtual void OnRep_IsSprinting();
+	UFUNCTION() virtual void OnRep_IsSprinting();
+
+	/** Handle Reloading replicated from server */
+	UFUNCTION() virtual void OnRep_IsReloading();
 
 	virtual void OnStartAim();
 	virtual void OnEndAim();
+	
+	virtual void OnStartSprint();
+    virtual void OnEndSprint();
+    	
+	virtual void OnStartReload();
+	virtual void OnEndReload();
 };

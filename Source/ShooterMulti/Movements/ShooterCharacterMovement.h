@@ -74,4 +74,6 @@ public:
 	UFUNCTION(BlueprintCallable) void StopSprinting(bool bClientSimulation = false);
 
 	virtual bool CanAimInCurrentState() const;
+	virtual bool CanSprintInCurrentState() const;
+	virtual bool CanReloadInCurrentState() const;
 };

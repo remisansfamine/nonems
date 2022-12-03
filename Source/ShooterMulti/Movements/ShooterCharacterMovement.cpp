@@ -5,9 +5,7 @@ void UShooterCharacterMovement::FSavedMove_Shooter::Clear()
 {
 	Super::Clear();
 
-	bWantsToSprint = 0;
-	bWantsToAim = 0;
-	bWantsToReload = 0;
+	bWantsToSprint = bWantsToAim = bWantsToReload = 0;
 }
 
 void UShooterCharacterMovement::FSavedMove_Shooter::SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, FNetworkPredictionData_Client_Character& ClientData)
@@ -26,7 +24,7 @@ bool UShooterCharacterMovement::FSavedMove_Shooter::CanCombineWith(const FSavedM
 	const FSavedMove_Shooter* NewShooterMove = static_cast<FSavedMove_Shooter*>(NewMove.Get());
 
 	if (bWantsToAim != NewShooterMove->bWantsToAim)
-			return false;
+		return false;
 	
 	if (bWantsToSprint != NewShooterMove->bWantsToSprint)
 		return false;
@@ -50,16 +48,17 @@ void UShooterCharacterMovement::FSavedMove_Shooter::PrepMoveFor(ACharacter* C)
 
 uint8 UShooterCharacterMovement::FSavedMove_Shooter::GetCompressedFlags() const
 {
+	uint8 Result = Super::GetCompressedFlags();
 	if (bWantsToSprint)
-		return Super::GetCompressedFlags() | FLAG_Custom_0;
+		Result |= FLAG_Custom_0;
 	
 	if (bWantsToAim)
-		return Super::GetCompressedFlags() | FLAG_Custom_1;
+		Result |= FLAG_Custom_1;
 
 	if (bWantsToReload)
-		return Super::GetCompressedFlags() | FLAG_Custom_2;
+		Result |= FLAG_Custom_2;
 		
-	return Super::GetCompressedFlags();
+	return Result;
 }
 
 UShooterCharacterMovement::FNetworkPredictionData_Client_Shooter::FNetworkPredictionData_Client_Shooter(const UCharacterMovementComponent& ClientMovement)
@@ -131,52 +130,87 @@ FNetworkPredictionData_Client* UShooterCharacterMovement::GetPredictionData_Clie
 void UShooterCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
 	// Proxies get replicated aim state.
-	if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
+	if (!ShooterCharacterOwner || ShooterCharacterOwner->GetLocalRole() == ROLE_SimulatedProxy)
+		return;
+	
+	// Check for a change in aim state. Players toggle aim by changing bWantsToAim.
+	const bool bIsAiming = ShooterCharacterOwner->bIsAiming;
+	if (bIsAiming && (!Safe_bWantsToAim || !CanAimInCurrentState()))
 	{
-		// Check for a change in aim state. Players toggle aim by changing bWantsToAim.
-		const bool bIsAiming = ShooterCharacterOwner && ShooterCharacterOwner->bIsAiming;
-		if (bIsAiming && (!Safe_bWantsToAim || !CanAimInCurrentState()))
-		{
-			StopAiming(false);
-		}
-		else if (!bIsAiming && Safe_bWantsToAim && CanAimInCurrentState())
-		{
-			StartAiming(false);
-		}
+		StopAiming(false);
+	}
+	else if (!bIsAiming && Safe_bWantsToAim && CanAimInCurrentState())
+	{
+		StartAiming(false);
+	}
+
+	// Check for a change in sprint state. Players toggle sprint by changing bWantsToSprint.
+	const bool bIsSprinting = ShooterCharacterOwner->bIsSprinting;
+	if (bIsSprinting && (!Safe_bWantsToSprint || !CanSprintInCurrentState()))
+	{
+		StopSprinting(false);
+	}
+	else if (!bIsSprinting && Safe_bWantsToSprint && CanSprintInCurrentState())
+	{
+		StartSprinting(false);
+	}
+
+	// Check for a change in reload state. Players toggle reload by changing bWantsToReload.
+	const bool bIsReloading = ShooterCharacterOwner->bIsReloading;
+	if (bIsReloading && (!Safe_bWantsToReload || !CanReloadInCurrentState()))
+	{
+		StopReloading(false);
+	}
+	else if (!bIsReloading && Safe_bWantsToReload && CanReloadInCurrentState())
+	{
+		StartReloading(false);
 	}
 }
 
 void UShooterCharacterMovement::UpdateCharacterStateAfterMovement(float DeltaSeconds)
 {
 	// Proxies get replicated aim state.
-	if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
-	{
-		// Stop aim if no longer allowed to aim
-		const bool bIsAiming = ShooterCharacterOwner && ShooterCharacterOwner->bIsAiming;
-		if (bIsAiming && !CanAimInCurrentState())
-		{
-			StopAiming(false);
-		}
-	}
+	if (!ShooterCharacterOwner || ShooterCharacterOwner->GetLocalRole() == ROLE_SimulatedProxy)
+		return;
+	
+	// Stop aim if no longer allowed to aim
+	const bool bIsAiming = ShooterCharacterOwner->bIsAiming;
+	if (bIsAiming && !CanAimInCurrentState())
+		StopAiming(false);
+
+	// Stop sprint if no longer allowed to sprint
+	const bool bIsSprinting = ShooterCharacterOwner->bIsSprinting;
+	if (bIsSprinting && !CanSprintInCurrentState())
+		StopSprinting(false);
+
+	// Stop reload if no longer allowed to reload
+	const bool bIsReloading = ShooterCharacterOwner->bIsReloading;
+	if (bIsReloading && !CanReloadInCurrentState())
+		StopReloading(false);
 }
 
 void UShooterCharacterMovement::StartReloading(bool bClientSimulation)
 {
-	Safe_bWantsToReload = true;
-	Safe_bWantsToAim = Safe_bWantsToSprint = false;
+	if (!HasValidData() || !bClientSimulation && !CanReloadInCurrentState())
+		return;
+
+	if (!bClientSimulation)
+		ShooterCharacterOwner->bIsReloading = true;
+	
+	ShooterCharacterOwner->OnStartReload();
 }
 
 void UShooterCharacterMovement::StopReloading(bool bClientSimulation)
 {
-	Safe_bWantsToReload = false;
+	if (!bClientSimulation)
+		ShooterCharacterOwner->bIsReloading = false;
+	
+	ShooterCharacterOwner->OnEndReload();
 }
 
 void UShooterCharacterMovement::StartAiming(bool bClientSimulation)
 {
-	if (!HasValidData())
-		return;
-
-	if (!bClientSimulation && !CanAimInCurrentState())
+	if (!HasValidData() || !bClientSimulation && !CanAimInCurrentState())
 		return;
 
 	if (!bClientSimulation)
@@ -195,16 +229,34 @@ void UShooterCharacterMovement::StopAiming(bool bClientSimulation)
 
 void UShooterCharacterMovement::StartSprinting(bool bClientSimulation)
 {
-	Safe_bWantsToSprint = true;
-	Safe_bWantsToReload = Safe_bWantsToAim = false;
+	if (!HasValidData() || !bClientSimulation && !CanSprintInCurrentState())
+		return;
+
+	if (!bClientSimulation)
+		ShooterCharacterOwner->bIsSprinting = true;
+	
+	ShooterCharacterOwner->OnStartSprint();
 }
 
 void UShooterCharacterMovement::StopSprinting(bool bClientSimulation)
 {
-	Safe_bWantsToSprint = false;
+	if (!bClientSimulation)
+		ShooterCharacterOwner->bIsSprinting = false;
+	
+	ShooterCharacterOwner->OnEndSprint();
 }
 
 bool UShooterCharacterMovement::CanAimInCurrentState() const
+{
+	return !IsFalling() && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics();
+}
+
+bool UShooterCharacterMovement::CanSprintInCurrentState() const
+{
+	return UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics();
+}
+
+bool UShooterCharacterMovement::CanReloadInCurrentState() const
 {
 	return !IsFalling() && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics();
 }
