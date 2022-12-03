@@ -3,13 +3,48 @@
 
 #include "MainMenuGM.h"
 
+//#include “Misc/App.h”
+#include "Interfaces/IPluginManager.h"
+
+FString AMainMenuGM::GetServerDefaultMapName()
+{
+	FString ServerDefaultMap;
+	GConfig->GetString(
+	  TEXT("/Script/EngineSettings.GameMapsSettings"),
+	  TEXT("ServerDefaultMap"),
+	  ServerDefaultMap,
+	  GEngineIni
+	);
+
+	TArray<FString> Out;
+	ServerDefaultMap.ParseIntoArray(Out,TEXT("."),true);
+
+	return Out.Last();
+}
+
 void AMainMenuGM::LaunchServerInstance()
 {
-	FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
-	ProjectPath.Append("StartDedicatedServer.bat");
+	// Main values for server launch
+	const FString EngineExePath = FPaths::EngineDir() + "Binaries/Win64/UE4Editor.exe";
+	const FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+	const FString ProjectName = FString(FApp::GetProjectName());
+	const FString DefaultMapName = GetServerDefaultMapName();
+	
+	// Create command format arguments
+	TArray<FStringFormatArg> args;
+	args.Add(FStringFormatArg(ProjectPath));
+	args.Add(FStringFormatArg(ProjectName));
+	args.Add(FStringFormatArg(DefaultMapName));
 
-	FProcHandle WorkHandle = FPlatformProcess::CreateProc(*ProjectPath, nullptr, false, false, false, nullptr, 0, nullptr, nullptr);
+	// Create the proc parameters
+	const FString ServerLaunchParams = FString::Format(TEXT(R"("{0}{1}.uproject" {2} -server -log -nostream)"), args);
 
+	// Create proc
+	const FProcHandle WorkHandle = FPlatformProcess::CreateProc(*EngineExePath, *ServerLaunchParams,
+		false, false, false, nullptr,
+		0, nullptr, nullptr);
+
+	// Check proc validity
 	if (WorkHandle.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Launching Server!"));

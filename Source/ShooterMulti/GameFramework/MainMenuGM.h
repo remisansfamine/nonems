@@ -14,6 +14,9 @@ class SHOOTERMULTI_API AMainMenuGM : public AGameMode
 {
 	GENERATED_BODY()
 
+private:
+	static FString GetServerDefaultMapName();
+	
 public:
 	UFUNCTION(BlueprintCallable)
 	void LaunchServerInstance();
