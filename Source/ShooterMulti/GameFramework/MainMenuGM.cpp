@@ -22,13 +22,11 @@ FString AMainMenuGM::GetServerDefaultMapName()
 	return Out.Last();
 }
 
-void AMainMenuGM::LaunchServerInstance()
+FString AMainMenuGM::FormatCommandParameters()
 {
-	// Main values for server launch
-	const FString EngineExePath = FPaths::EngineDir() + "Binaries/Win64/UE4Editor.exe";
 	const FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 	const FString ProjectName = FString(FApp::GetProjectName());
-	const FString DefaultMapName = GetServerDefaultMapName();
+	const FString DefaultMapName = AMainMenuGM::GetServerDefaultMapName();
 	
 	// Create command format arguments
 	TArray<FStringFormatArg> args;
@@ -36,10 +34,16 @@ void AMainMenuGM::LaunchServerInstance()
 	args.Add(FStringFormatArg(ProjectName));
 	args.Add(FStringFormatArg(DefaultMapName));
 
-	// Create the proc parameters
-	const FString ServerLaunchParams = FString::Format(TEXT(R"("{0}{1}.uproject" {2} -server -log -nostream)"), args);
+	return FString::Format(TEXT(R"("{0}{1}.uproject" {2} -server -log -nostream)"), args);
+}
 
-	// Create proc
+void AMainMenuGM::LaunchServerInstance()
+{
+	// Create proc arguments
+	const FString EngineExePath = FPaths::EngineDir() + "Binaries/Win64/UE4Editor.exe";
+	const FString ServerLaunchParams = AMainMenuGM::FormatCommandParameters();
+
+	// Create proc handle
 	const FProcHandle WorkHandle = FPlatformProcess::CreateProc(*EngineExePath, *ServerLaunchParams,
 		false, false, false, nullptr,
 		0, nullptr, nullptr);

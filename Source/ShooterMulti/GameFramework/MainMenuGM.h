@@ -16,6 +16,7 @@ class SHOOTERMULTI_API AMainMenuGM : public AGameMode
 
 private:
 	static FString GetServerDefaultMapName();
+	static FString FormatCommandParameters();
 	
 public:
 	UFUNCTION(BlueprintCallable)
