@@ -1,21 +1,19 @@
 #pragma once
 
-#include "GameFramework/PlayerState.h"
 #include "DeathMatchGM.h"
 #include "PlayerGI.h"
+#include "ShooterMultiPS_Base.h"
 #include "ShooterPS.generated.h"
 
 UCLASS()
-class SHOOTERMULTI_API AShooterPS : public APlayerState
+class SHOOTERMULTI_API AShooterPS : public AShooterMultiPS_Base
 {
 	GENERATED_BODY()
 
 protected:
-
 	void BeginPlay() override;
 
 public:
-
 	UPROPERTY(BlueprintReadOnly)
 	int NbKill;
 	UPROPERTY(BlueprintReadOnly)
