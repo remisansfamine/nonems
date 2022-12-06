@@ -1,4 +1,8 @@
 #include "ShooterCharacter.h"
+
+#include <Actor.h>
+#include <Audioclient.h>
+
 #include "../Animations/ShooterCharacterAnim.h"
 #include "../GameFramework/PlayerGI.h"
 #include "../LD/EnemySpawnerButton.h"
@@ -9,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
@@ -102,10 +107,36 @@ void AShooterCharacter::BeginPlay()
 		Invincibility(GM->InvincibilityTime);
 }
 
+void AShooterCharacter::SaveFrame()
+{
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), Actors);
+
+	FSavedCollider_Shooter Frame;
+
+	Frame.TimeStamp = GetWorld()->RealTimeSeconds;
+
+	for (AActor* Actor : Actors)
+	{
+		TSet<UActorComponent*> ActorComponents = Actor->GetComponents();
+
+		for (UActorComponent* ActorComponent : ActorComponents)
+		{
+			if (const UPrimitiveComponent* Collider = Cast<UPrimitiveComponent>(ActorComponent))
+				Frame.ColliderMap[Collider] = Collider->GetComponentTransform();
+		}
+	}
+
+	CollidersFrame.Add(Frame);
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetLocalRole() == ROLE_Authority)
+		SaveFrame();
+	
 	if (IsDead())
 		return;
 

@@ -37,7 +37,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character|Shooter")
 	EShooterCharacterState State;
 	EShooterCharacterState PrevState;
-
+	
+	class FSavedCollider_Shooter 
+	{
+	public:
+		float TimeStamp;
+		TMap<UPrimitiveComponent*, FTransform> ColliderMap;
+	};
+	
+	TArray<FSavedCollider_Shooter> CollidersFrame;
+	
 	UPROPERTY(BlueprintReadOnly)
 	float AimPitch;
 
@@ -59,6 +68,8 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Character|Shooter")
 	void InvincibilityFX(float Duration);
 	void InvincibilityFX_Implementation(float Duration) {};
+
+	void SaveFrame();
 
 public:
 	bool bIsShooting = false;

@@ -22,10 +22,8 @@ void AUndeadDirector::BeginPlay()
 	if (SpawnPoints.Num() == 0)
 		UE_LOG(GLogShooterMulti, Warning, TEXT("Undead Director has no spawn point."));
 
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AUndeadDirector::SpawnTickEnemy, SecondPerSpawn, true);
-	
-	//ADeathMatchGS* temp = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
-	//temp->OnPlayerNum.AddLambda([this](ADeathMatchGS* gs) { UpdateFrequencies(gs); });
+	if (GetLocalRole() == ROLE_Authority)
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AUndeadDirector::SpawnTickEnemy, SecondPerSpawn, true);
 }
 
 void AUndeadDirector::Destroyed()
