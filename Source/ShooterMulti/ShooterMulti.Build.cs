@@ -8,9 +8,8 @@ public class ShooterMulti : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 			
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "AIModule", "GameplayTasks", "GameplayCameras" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "AIModule", "GameplayTasks", "GameplayCameras", "Json", "JsonUtilities" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
-
 	}
 }

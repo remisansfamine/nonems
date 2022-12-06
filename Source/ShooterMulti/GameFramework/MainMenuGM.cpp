@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MainMenuGM.h"
 
-//#include “Misc/App.h”
-#include "Interfaces/IPluginManager.h"
+#include "Engine/Private/DataTableJSON.h"
+#include "JsonUtilities/Public/JsonObjectConverter.h"
 
 FString AMainMenuGM::GetServerDefaultMapName()
 {
@@ -57,4 +56,25 @@ void AMainMenuGM::LaunchServerInstance()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to launch!"));
 	}
+}
+
+bool AMainMenuGM::SaveServerConfig(const FServerConfig& config)
+{
+	TSharedPtr<FJsonObject> jsonObjectInput = FJsonObjectConverter::UStructToJsonObject(config);
+
+	if (jsonObjectInput == nullptr)
+		return false;
+
+	FString fileInput;
+	
+	if (!FJsonSerializer::Serialize(jsonObjectInput.ToSharedRef(), TJsonWriterFactory<>::Create(&fileInput, 0)))
+		return false;
+	
+	FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+	ProjectPath.Append(FString("config.ini"));
+	
+	if (!FFileHelper::SaveStringToFile(fileInput, *ProjectPath))
+		return false;
+	
+	return true;
 }

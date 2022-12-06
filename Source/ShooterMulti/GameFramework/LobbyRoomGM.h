@@ -6,6 +6,22 @@
 #include "GameFramework/GameMode.h"
 #include "LobbyRoomGM.generated.h"
 
+USTRUCT(BlueprintType)
+struct FServerConfig
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString Name = "";
+
+	UPROPERTY(BlueprintReadWrite)
+	FString Password = "";
+
+	UPROPERTY(BlueprintReadWrite)
+	int MaxSlots = 5;
+};
+
+
 /**
  * 
  */
@@ -13,5 +29,11 @@ UCLASS()
 class SHOOTERMULTI_API ALobbyRoomGM : public AGameMode
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void CheckUserPassword(const FString& password, const APlayerController* controller);
 	
+	UFUNCTION(BlueprintCallable)
+	bool ParseServerConfig(FServerConfig& config);
 };

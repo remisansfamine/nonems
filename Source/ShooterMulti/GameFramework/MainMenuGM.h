@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "LobbyRoomGM.h"
 #include "MainMenuGM.generated.h"
 
 /**
@@ -21,4 +22,7 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 	void LaunchServerInstance();
+
+	UFUNCTION(BlueprintCallable)
+	bool SaveServerConfig(const FServerConfig& config);
 };
