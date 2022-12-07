@@ -2,6 +2,7 @@
 
 #include "DeathMatchGM.h"
 #include "GameFramework/GameStateBase.h"
+#include "ShooterMulti/LagCompensator.h"
 #include "DeathMatchGS.generated.h"
 
 class AHealthCharacter;
@@ -12,7 +13,9 @@ class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase
 	GENERATED_BODY()
 
 protected:
-
+	UPROPERTY()
+	ALagCompensator* CompensatorInstance = nullptr;
+	
 	FTimerHandle CountdownTimerHandle;
 
 	UPROPERTY(Transient, BlueprintReadOnly, Category = "Shooter|GameState")
@@ -66,4 +69,7 @@ public:
 	void ShowTeamWinHUD_Implementation(ETeam Team) {};
 	
 	int NewFrequency(int Sec);
+
+	void SetLagCompensator(ALagCompensator* Compensator) { if (Compensator && !CompensatorInstance) CompensatorInstance = Compensator; }
+	ALagCompensator* GetLagCompensator() const { return CompensatorInstance; }
 };

@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "../GameFramework/ShooterPS.h"
 #include "../GameFramework/Resetable.h"
+#include "ShooterMulti/Components/CompensatorLabel.h"
 #include "HealthCharacter.generated.h"
 
 UCLASS()
@@ -11,6 +12,8 @@ class SHOOTERMULTI_API AHealthCharacter : public ACharacter, public IResetable
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY()
+	UCompensatorLabel* LabelComponent = nullptr;
 
 	float DisapearTimer;
 	bool bIsDisapearing;

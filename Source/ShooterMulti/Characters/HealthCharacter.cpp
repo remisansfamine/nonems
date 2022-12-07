@@ -14,6 +14,8 @@
 
 AHealthCharacter::AHealthCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	LabelComponent = CreateDefaultSubobject<UCompensatorLabel>(TEXT("CompensatorLabel"));
+	
 	//Create Punch Collision
 	PunchCollision = CreateDefaultSubobject<USphereComponent>(TEXT("PunchCollision"));
 	PunchCollision->SetupAttachment(RootComponent);
