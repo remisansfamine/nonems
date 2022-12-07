@@ -79,7 +79,7 @@ bool UWeaponComponent::Shot()
 	//apply shake
 	auto PlayerController = Cast<AShooterController>(Cast<AShooterCharacter>(GetOwner())->GetController());
 	if (PlayerController && ShootShake)
-		PlayerController->ClientPlayCameraShake(ShootShake);
+		PlayerController->ClientStartCameraShake(ShootShake);
 
 	//add spread
 	CurrentSpread = FMath::Min(WeaponMaxSpread, CurrentSpread + WeaponSpreadPerShot);

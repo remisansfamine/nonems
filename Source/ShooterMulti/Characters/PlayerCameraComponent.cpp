@@ -48,9 +48,9 @@ void UPlayerCameraComponent::ShakeCamera(uint8 State, float Intensity)
 		return;
 
 	if (State == uint8(EShooterCharacterState::Sprint) && SprintShake)
-		Controller->ClientPlayCameraShake(SprintShake, Intensity);
+		Controller->ClientStartCameraShake(SprintShake, Intensity);
 	else if (RunShake)
-		Controller->ClientPlayCameraShake(RunShake, Intensity);
+		Controller->ClientStartCameraShake(RunShake, Intensity);
 	
 	if (FMath::Abs(Intensity) < .02f)
 	{
