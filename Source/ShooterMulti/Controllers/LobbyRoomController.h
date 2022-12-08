@@ -14,16 +14,11 @@ class SHOOTERMULTI_API ALobbyRoomController : public APlayerController
 {
 	GENERATED_BODY()
 
-	FTransform GetFreePlayerStart(TArray<AActor*> PlayerStarts) const;
-
 public:
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> LobbyCharacter;
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Sr_GetAndVerifyPassword(const FString& password);
 
 	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void CL_UpdateCharacters(int characterCount);
+	void CL_SpawnAllCharacters();
 };
