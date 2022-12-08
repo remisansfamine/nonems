@@ -4,7 +4,30 @@
 
 #include "HAL/PlatformFilemanager.h"
 #include "Serialization/JsonSerializer.h"
+#include "GameFrameWork/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 #include "JsonUtilities/Public/JsonObjectConverter.h"
+
+AActor* ALobbyRoomGM::ChoosePlayerStart_Implementation(AController* Player)
+{
+	TArray<AActor*> FoundPlayerStarts;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundPlayerStarts);
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, "Set player start");
+	
+	for (auto& actor : FoundPlayerStarts)
+	{
+		APlayerStart* playerStart = Cast<APlayerStart>(actor);
+		if (playerStart->PlayerStartTag != FName("Taken"))
+		{
+			playerStart->PlayerStartTag = FName("Taken");
+			return playerStart;
+		}
+	}
+	
+	return nullptr;
+
+}
 
 bool ALobbyRoomGM::ParseServerConfig(FServerConfig& config)
 {

@@ -36,4 +36,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool ParseServerConfig(FServerConfig& config);
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 };
