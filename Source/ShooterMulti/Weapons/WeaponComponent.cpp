@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/DecalComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 
 void UWeaponComponent::BeginPlay()
@@ -28,6 +29,13 @@ void UWeaponComponent::BeginPlay()
 	}
 }
 
+void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UWeaponComponent, LoadedAmmo);
+	DOREPLIFETIME(UWeaponComponent, AmmoCount);
+}
+
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	ShootTimer += DeltaTime;
@@ -38,18 +46,8 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	CurrentSpread = FMath::Max(MinSpread, CurrentSpread - WeaponSpreadRecoveryRate * DeltaTime);
 }
 
-bool UWeaponComponent::Shot()
+void UWeaponComponent::SR_Shoot()
 {
-	if (ShootTimer < FireRate)
-		return true;
-	
-	ShootTimer = 0.f;
-
-	if (LoadedAmmo <= 0)
-		return false;
-
-	--LoadedAmmo;
-
 	FLaserWeaponData WeaponData;
 	WeaponData.MuzzleTransform = GetSocketTransform("MuzzleFlashSocket");
 	WeaponData.LookTransform = Cast<AShooterCharacter>(GetOwner())->GetCameraComponent()->GetCameraHandle()->GetComponentTransform();
@@ -59,14 +57,37 @@ bool UWeaponComponent::Shot()
 
 	FHitResult HitResult;
 	if (ShootLaser(GetOwner(), HitResult, WeaponData))
-	{
-		//make impact decal
-		MakeImpactDecal(HitResult, ImpactDecalMat, .9f * ImpactDecalSize, 1.1f * ImpactDecalSize);
+		Multi_SetPointOfInpact(HitResult);
 
-		//create impact particles
-		MakeImpactParticles(ImpactParticle, HitResult, .66f);
-	}
+	Multi_PlayShotFX(HitResult, WeaponData);
+}
 
+void UWeaponComponent::SR_TryToShoot_Implementation()
+{
+	if (ShootTimer < FireRate)
+		return;
+	
+	ShootTimer = 0.f;
+
+	if (LoadedAmmo <= 0)
+		return;
+
+	--LoadedAmmo;
+
+	SR_Shoot();
+}
+
+void UWeaponComponent::Multi_SetPointOfInpact_Implementation(const FHitResult& HitResult)
+{
+	//make impact decal
+	MakeImpactDecal(HitResult, ImpactDecalMat, .9f * ImpactDecalSize, 1.1f * ImpactDecalSize);
+
+	//create impact particles
+	MakeImpactParticles(ImpactParticle, HitResult, .66f);
+}
+
+void UWeaponComponent::Multi_PlayShotFX_Implementation(const FHitResult& HitResult, const FLaserWeaponData& WeaponData)
+{
 	//make the beam visuals
 	MakeLaserBeam(WeaponData.MuzzleTransform.GetLocation(), HitResult.ImpactPoint, BeamParticle, BeamIntensity, FLinearColor(1.f, 0.857892f, 0.036923f), BeamIntensityCurve);
 
@@ -87,6 +108,15 @@ bool UWeaponComponent::Shot()
 	//play sound if gun empty
 	if (LoadedAmmo == 0)
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotEmptySound, GetOwner()->GetActorLocation());
+}
+
+bool UWeaponComponent::TryToShoot()
+{
+	SR_TryToShoot();
+	
+	
+
+	
 
 	return true;
 }
@@ -127,6 +157,15 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnPhysicalMaterial = true;
 
+	ALagCompensator* Compensator = GetWorld()->GetGameState<ADeathMatchGS>()->GetLagCompensator();
+
+	if (!Compensator)
+		return false;
+
+	Compensator->Replay();
+
+	bool DidHit = false;
+	
 	//in case of actor hit
 	if (GetWorld()->LineTraceSingleByChannel(	HitResult,
 												LookLocation,
@@ -154,16 +193,18 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 			if (StaticMeshComponent->IsSimulatingPhysics())
 				StaticMeshComponent->AddForceAtLocation(LookDirection * WeaponData.Knockback, HitResult.ImpactPoint, HitResult.BoneName);
 		}
-
-		return Cast<ACharacter>(HitResult.Actor) == nullptr; // if collision with non character.
+		DidHit = Cast<ACharacter>(HitResult.Actor) == nullptr; // if collision with non character.
 	}
 	//when no actor hit
 	else
 	{
 		HitResult.ImpactPoint = LookLocation + LookDirection * WeaponData.MaxDistance;
 		HitResult.Distance = WeaponData.MaxDistance;
-		return false;
 	}
+	
+	Compensator->ResetFrame();
+
+	return DidHit;
 }
 
 void UWeaponComponent::MakeImpactDecal(	const FHitResult& FromHit,

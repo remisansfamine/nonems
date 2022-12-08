@@ -113,7 +113,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	if (IsDead())
 		return;
 
-	if (bIsShooting && !Weapon->Shot())
+	if (bIsShooting && !Weapon->TryToShoot())
 		StartReload();
 
 	// Anim aim offsets

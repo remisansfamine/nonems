@@ -15,18 +15,27 @@ UCompensatorLabel::UCompensatorLabel()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 // Called when the game starts
 void UCompensatorLabel::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (ADeathMatchGS* GS = Cast<ADeathMatchGS>(GetWorld()->GetGameState()))
-		GS->GetLagCompensator()->SubscribeReplication(GetOwner());
+	
+	if (GetOwner()->GetLocalRole() == ROLE_Authority)
+	{
+		if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
+			GS->GetLagCompensator()->SubscribeReplication(GetOwner());
+	}
 }
 
 void UCompensatorLabel::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (ADeathMatchGS* GS = Cast<ADeathMatchGS>(GetWorld()->GetGameState()))
-		GS->GetLagCompensator()->UnsubscribeReplication(GetOwner());
+	if (EndPlayReason != EEndPlayReason::Type::Destroyed)
+		return;
+	
+	if (GetOwner()->GetLocalRole() == ROLE_Authority)
+	{
+		if (UWorld* World = GetWorld())
+		if (ADeathMatchGS* GS = World->GetGameState<ADeathMatchGS>())
+			GS->GetLagCompensator()->UnsubscribeReplication(GetOwner());
+	}
 }

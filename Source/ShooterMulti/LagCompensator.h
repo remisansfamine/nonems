@@ -19,25 +19,43 @@ private:
 	class FSavedCollider_Shooter 
 	{
 	public:
+		struct ColliderState
+		{
+			UPrimitiveComponent* Collider;
+			FTransform Transform;
+		};
+		
 		float TimeStamp;
-		TMap<UPrimitiveComponent*, FTransform> ColliderMap;
+		TArray<ColliderState> CollidersStates;
 	};
 	
-	TArray<FSavedCollider_Shooter> CollidersFrame;
+	TArray<FSavedCollider_Shooter> CollidersFrames;
 	FSavedCollider_Shooter CurrentFrame;
 
 	UPROPERTY()
-	TSet<UPrimitiveComponent*> SubsribedPrimitives;
+	TSet<UPrimitiveComponent*> SubscribedPrimitives;
 	
 	void SaveFrame();
+	static void ApplyFrame(const FSavedCollider_Shooter& FrameToApply);
+	
+	float CurrentTimeStamp = 0.f;
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(Server, Reliable)
+	virtual void SR_ReplayFrame(float TimeStamp);
+
+	UFUNCTION(Server, Reliable)
+	virtual void SR_ResetFrame();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void Replay();
+	void ResetFrame();
 
 	void SubscribeReplication(const AActor* ActorToSubscribe);
 	void UnsubscribeReplication(const AActor* ActorToUnsubscribe);

@@ -25,6 +25,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Character|Health", meta = (ClampMin = "0.0"))
 	float MaxHealth = 100.f;
 
+	UPROPERTY(Replicated)
 	float Health = MaxHealth;
 
 	UPROPERTY(EditAnywhere, Category = "Character|Health", meta = (ClampMin = "0.0"))
@@ -92,6 +93,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void Reset() override;
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void StartDisapear();
 	virtual void UpdateDisapear();

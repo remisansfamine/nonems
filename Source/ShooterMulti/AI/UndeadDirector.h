@@ -45,4 +45,7 @@ public:
 
 	void SpawnEnemy(FVector pos, const FRotator& rot, ETeam Team = ETeam::AI);
 	void SpawnTickEnemy();
+
+	UPROPERTY(EditAnywhere)
+	bool IsActive = true;
 };

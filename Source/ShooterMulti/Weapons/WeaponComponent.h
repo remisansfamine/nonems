@@ -88,15 +88,26 @@ protected:
 								const FVector& Source = FVector::ZeroVector,
 								const FVector& Target = FVector::ZeroVector);
 
+	void SR_Shoot();
+	
+	UFUNCTION(Server, Reliable)
+	void SR_TryToShoot();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPointOfInpact(const FHitResult& HitResult);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayShotFX(const FHitResult& HitResult, const FLaserWeaponData& WeaponData);
+	
 public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
 	int MaxAmmo = 50;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
 	int AmmoCount = 50;
 
-	UPROPERTY(Transient, BlueprintReadOnly, Category = "Character|Shooter|Weapon")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Character|Shooter|Weapon")
 	int LoadedAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnyWhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
@@ -143,9 +154,11 @@ public:
 
 	void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool Shot();
+	bool TryToShoot();
 
 	void Reload();
 

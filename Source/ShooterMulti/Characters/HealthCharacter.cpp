@@ -9,6 +9,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine.h"
 #include "../Controllers/ShooterController.h"
+#include "Net/UnrealNetwork.h"
 
 // COMMENTARY SECOND
 
@@ -58,6 +59,12 @@ void AHealthCharacter::Tick(float DeltaTime)
 	DisapearTimer += DeltaTime;
 
 	UpdateDisapear();
+}
+
+void AHealthCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AHealthCharacter, Health);
 }
 
 bool AHealthCharacter::IsDead()
