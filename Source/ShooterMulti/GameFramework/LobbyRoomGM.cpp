@@ -10,22 +10,24 @@
 
 AActor* ALobbyRoomGM::ChoosePlayerStart_Implementation(AController* Player)
 {
-	TArray<AActor*> FoundPlayerStarts;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundPlayerStarts);
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, "Set player start");
-	
-	for (auto& actor : FoundPlayerStarts)
-	{
-		APlayerStart* playerStart = Cast<APlayerStart>(actor);
-		if (playerStart->PlayerStartTag != FName("Taken"))
-		{
-			playerStart->PlayerStartTag = FName("Taken");
-			return playerStart;
-		}
-	}
-	
+	UE_LOG(LogTemp, Warning, TEXT("Choose player start impl"));
 	return nullptr;
+	//TArray<AActor*> FoundPlayerStarts;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundPlayerStarts);
+//
+	//GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, "Set player start");
+	//
+	//for (auto& actor : FoundPlayerStarts)
+	//{
+	//	APlayerStart* playerStart = Cast<APlayerStart>(actor);
+	//	if (playerStart->PlayerStartTag != FName("Taken"))
+	//	{
+	//		playerStart->PlayerStartTag = FName("Taken");
+	//		return playerStart;
+	//	}
+	//}
+	//
+	//return nullptr;
 
 }
 

@@ -21,5 +21,5 @@ void ALobbyRoomController::CL_SpawnAllCharacters_Implementation()
 	ALobbyRoomGS* GS = GetWorld()->GetGameState<ALobbyRoomGS>();
 
 	if (GS)
-		GS->SpawnAllCharacters(this);
+		GS->SpawnSelfCharacter(this);
 }

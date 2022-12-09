@@ -6,9 +6,6 @@
 #include "GameFramework/GameState.h"
 #include "LobbyRoomGS.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 {
@@ -17,14 +14,33 @@ class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> LobbyCharacter;
 
-	TArray<AActor*> GetSortedPlayerStarts() const;
+	UPROPERTY()
+	class APlayerStart* SelfPlayerStart;
+	
+	UPROPERTY()
+	TArray<class APlayerStart*> PlayerStarts;
+
+	UPROPERTY()
+	TArray<ACharacter*> CharactersSpawned;
+
+	UPROPERTY()
+	APlayerController* SelfController;
+
 	FTransform GetFreePlayerStart() const;
-	FTransform GetFreePlayerStart(const TArray<AActor*>& PlayerStarts) const;
+
+	void SetupPlayerStart();
 	
 public:
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable)
-	void SpawnAllCharacters(const APlayerController* LocalController) const;
+	void SpawnSelfCharacter(APlayerController* LocalController);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateCharacters();
 	
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void Multi_UpdateCharacters(const APlayerController* NewController);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
