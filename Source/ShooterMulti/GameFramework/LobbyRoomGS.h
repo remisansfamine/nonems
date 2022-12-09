@@ -11,23 +11,26 @@ class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 {
 	GENERATED_BODY()
 
+	// Blueprint instance of the lobby character
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> LobbyCharacter;
 
+	// Player start for the owner (local client)
 	UPROPERTY()
 	class APlayerStart* SelfPlayerStart;
-	
+
+	// Player start available for the other clients
 	UPROPERTY()
 	TArray<class APlayerStart*> PlayerStarts;
 
+	// All client characters spawned
 	UPROPERTY()
 	TArray<ACharacter*> CharactersSpawned;
 
+	// Local player controller
 	UPROPERTY()
 	APlayerController* SelfController;
-
-	FTransform GetFreePlayerStart() const;
-
+	
 	void SetupPlayerStart();
 	
 public:
@@ -38,9 +41,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCharacters();
-	
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void Multi_UpdateCharacters(const APlayerController* NewController);
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

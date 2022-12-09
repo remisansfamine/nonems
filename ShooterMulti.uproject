@@ -87,6 +87,10 @@
 				"Android",
 				"HoloLens"
 			]
+		},
+		{
+			"Name": "AdvancedSteamSessions",
+			"Enabled": true
 		}
 	]
 }

@@ -3,30 +3,11 @@
 
 #include "LobbyRoomGS.h"
 
-#include "Components/SplineComponent.h"
 #include "GameFramework/PlayerStart.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ShooterMulti/Characters/LobbyRoomCharacter.h"
-
-FTransform ALobbyRoomGS::GetFreePlayerStart() const
-{
-	// Dont check for the first player start (reserve for the self client)
-	for (int i = 1; i < PlayerStarts.Num(); i++)
-	{
-		APlayerStart* PlayerStart = Cast<APlayerStart>(PlayerStarts[i]);
-		if (PlayerStart->PlayerStartTag != "TakenTag")
-		{
-			PlayerStart->PlayerStartTag = FName("TakenTag");
-			return PlayerStart->GetTransform();
-		}
-		
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, "Has Taken TAG");
-	}
-
-	return FTransform();
-}
 
 void ALobbyRoomGS::SetupPlayerStart()
 {
@@ -89,8 +70,6 @@ void ALobbyRoomGS::UpdateCharacters()
 	// Destroy all characters
 	for (ACharacter* Character : CharactersSpawned)
 		Character->Destroy();
-
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, "Update characters");
 	
 	// Clean the list
 	CharactersSpawned.Empty();
@@ -114,36 +93,4 @@ void ALobbyRoomGS::UpdateCharacters()
 		// Add the character to the list
 		CharactersSpawned.Add(Character);
 	}
-}
-
-void ALobbyRoomGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-}
-
-void ALobbyRoomGS::Multi_UpdateCharacters_Implementation(const APlayerController* NewController)
-{
-	return;
-	
-	// Not running on server
-	if (IsRunningDedicatedServer())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Server dont spawn character"));
-		return;
-	}
-
-	// Not spawning again self
-	if (NewController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Not spawning self"));
-		return;
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Spawning character SINGLE"));
-
-	const FTransform NewPlayerTransform = GetFreePlayerStart();
-	AActor* SpawnedActor = GetWorld()->SpawnActor(*LobbyCharacter, &NewPlayerTransform);
-
-	ALobbyRoomCharacter* Character = Cast<ALobbyRoomCharacter>(SpawnedActor);
-	Character->ChangeHeadName("Patrick");
 }
