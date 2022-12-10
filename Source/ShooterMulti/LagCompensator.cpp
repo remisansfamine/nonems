@@ -6,6 +6,7 @@
 #include "GameFramework/DeathMatchGS.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine.h"
 
 // Sets default values
 ALagCompensator::ALagCompensator()
@@ -28,22 +29,17 @@ void ALagCompensator::BeginPlay()
 	}
 }
 
-void ALagCompensator::SR_ReplayFrame_Implementation(float TimeStamp)
+void ALagCompensator::SR_StartCompensation_Implementation(float TimeStamp)
 {
 	for (const FSavedCollider_Shooter& Frame : CollidersFrames)
 	{
-		if (CurrentTimeStamp > Frame.TimeStamp)
+		if (Frame.TimeStamp >= TimeStamp)
 		{
 			ApplyFrame(Frame);
 			
 			return;
 		}
 	}
-}
-
-void ALagCompensator::Replay()
-{
-	SR_ReplayFrame(CurrentTimeStamp);
 }
 
 void ALagCompensator::SaveFrame()
@@ -69,14 +65,9 @@ void ALagCompensator::ApplyFrame(const FSavedCollider_Shooter& FrameToApply)
 		ColliderFrame.Collider->SetWorldTransform(ColliderFrame.Transform);
 }
 
-void ALagCompensator::SR_ResetFrame_Implementation()
+void ALagCompensator::SR_FinishCompensation_Implementation()
 {
 	ApplyFrame(CurrentFrame);
-}
-
-void ALagCompensator::ResetFrame()
-{
-	SR_ResetFrame();
 }
 
 // Called every frame

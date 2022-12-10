@@ -46,7 +46,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	CurrentSpread = FMath::Max(MinSpread, CurrentSpread - WeaponSpreadRecoveryRate * DeltaTime);
 }
 
-void UWeaponComponent::SR_Shoot()
+void UWeaponComponent::SR_Shoot(float TimeStamp)
 {
 	FLaserWeaponData WeaponData;
 	WeaponData.MuzzleTransform = GetSocketTransform("MuzzleFlashSocket");
@@ -57,13 +57,13 @@ void UWeaponComponent::SR_Shoot()
 
 	FHitResult HitResult;
 	
-	if (ShootLaser(GetOwner(), HitResult, WeaponData))
+	if (ShootLaser(GetOwner(), HitResult, WeaponData, TimeStamp))
 		Multi_SetPointOfImpact(HitResult);
 
 	CL_PlayShotFX(HitResult.ImpactPoint, WeaponData);
 }
 
-void UWeaponComponent::SR_TryToShoot_Implementation()
+void UWeaponComponent::SR_TryToShoot_Implementation(float TimeStamp)
 {
 	if (ShootTimer < FireRate)
 		return;
@@ -75,7 +75,7 @@ void UWeaponComponent::SR_TryToShoot_Implementation()
 
 	--LoadedAmmo;
 
-	SR_Shoot();
+	SR_Shoot(TimeStamp);
 }
 
 void UWeaponComponent::Multi_SetPointOfImpact_Implementation(const FHitResult& HitResult)
@@ -114,7 +114,7 @@ void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, 
 
 bool UWeaponComponent::TryToShoot()
 {
-	SR_TryToShoot();
+	SR_TryToShoot(GetWorld()->RealTimeSeconds);
 
 	return true;
 }
@@ -140,7 +140,7 @@ void UWeaponComponent::GetAmmo(int Count)
 
 // Weapon Utiliy
 
-bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData)
+bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData, float TimeStamp)
 {
 	FVector LookLocation = WeaponData.LookTransform.GetLocation();
 	FVector LookDirection = WeaponData.LookTransform.GetRotation().GetForwardVector();
@@ -160,11 +160,11 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 	if (!Compensator)
 		return false;
 
-	// Compensator->Replay();
+	Compensator->SR_StartCompensation(TimeStamp);
 
 	bool DidHit = GetWorld()->LineTraceSingleByChannel(	HitResult, LookLocation, LookLocation + LookDirection * WeaponData.MaxDistance, ECC_Visibility , CollisionParams);
 
-	// Compensator->ResetFrame();
+	Compensator->SR_FinishCompensation();
 	
 	//in case of actor hit
 	if (!DidHit)

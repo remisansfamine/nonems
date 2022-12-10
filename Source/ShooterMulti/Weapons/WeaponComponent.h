@@ -34,7 +34,7 @@ private:
 	// Weapon Utility.
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter|Weapon")
-	bool ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData);
+	bool ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData, float TimeStamp);
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter|Weapon")
 	void MakeImpactDecal(	const FHitResult& FromHit,
@@ -88,10 +88,10 @@ protected:
 								const FVector& Source = FVector::ZeroVector,
 								const FVector& Target = FVector::ZeroVector);
 
-	void SR_Shoot();
+	void SR_Shoot(float TimeStamp);
 	
 	UFUNCTION(Server, Reliable)
-	void SR_TryToShoot();
+	void SR_TryToShoot(float TimeStamp);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SetPointOfImpact(const FHitResult& HitResult);

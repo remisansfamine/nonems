@@ -43,19 +43,16 @@ private:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UFUNCTION(Server, Reliable)
-	virtual void SR_ReplayFrame(float TimeStamp);
-
-	UFUNCTION(Server, Reliable)
-	virtual void SR_ResetFrame();
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Replay();
-	void ResetFrame();
+	UFUNCTION(Server, Reliable)
+	virtual void SR_StartCompensation(float TimeStamp);
+	
+	UFUNCTION(Server, Reliable)
+	virtual void SR_FinishCompensation();
 
 	void SubscribeReplication(const AActor* ActorToSubscribe);
 	void UnsubscribeReplication(const AActor* ActorToUnsubscribe);
