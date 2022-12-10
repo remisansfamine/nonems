@@ -94,10 +94,10 @@ protected:
 	void SR_TryToShoot();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_SetPointOfInpact(const FHitResult& HitResult);
+	void Multi_SetPointOfImpact(const FHitResult& HitResult);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayShotFX(const FHitResult& HitResult, const FLaserWeaponData& WeaponData);
+	UFUNCTION(Client, Reliable)
+	void CL_PlayShotFX(const FVector& ImpactPoint, const FLaserWeaponData& WeaponData);
 	
 public:
 

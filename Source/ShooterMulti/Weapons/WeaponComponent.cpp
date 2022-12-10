@@ -56,10 +56,11 @@ void UWeaponComponent::SR_Shoot()
 	WeaponData.Spread = CurrentSpread;
 
 	FHitResult HitResult;
+	
 	if (ShootLaser(GetOwner(), HitResult, WeaponData))
-		Multi_SetPointOfInpact(HitResult);
+		Multi_SetPointOfImpact(HitResult);
 
-	Multi_PlayShotFX(HitResult, WeaponData);
+	CL_PlayShotFX(HitResult.ImpactPoint, WeaponData);
 }
 
 void UWeaponComponent::SR_TryToShoot_Implementation()
@@ -77,7 +78,7 @@ void UWeaponComponent::SR_TryToShoot_Implementation()
 	SR_Shoot();
 }
 
-void UWeaponComponent::Multi_SetPointOfInpact_Implementation(const FHitResult& HitResult)
+void UWeaponComponent::Multi_SetPointOfImpact_Implementation(const FHitResult& HitResult)
 {
 	//make impact decal
 	MakeImpactDecal(HitResult, ImpactDecalMat, .9f * ImpactDecalSize, 1.1f * ImpactDecalSize);
@@ -86,25 +87,26 @@ void UWeaponComponent::Multi_SetPointOfInpact_Implementation(const FHitResult& H
 	MakeImpactParticles(ImpactParticle, HitResult, .66f);
 }
 
-void UWeaponComponent::Multi_PlayShotFX_Implementation(const FHitResult& HitResult, const FLaserWeaponData& WeaponData)
+void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, const FLaserWeaponData& WeaponData)
 {
 	//make the beam visuals
-	MakeLaserBeam(WeaponData.MuzzleTransform.GetLocation(), HitResult.ImpactPoint, BeamParticle, BeamIntensity, FLinearColor(1.f, 0.857892f, 0.036923f), BeamIntensityCurve);
-
+	MakeLaserBeam(WeaponData.MuzzleTransform.GetLocation(), ImpactPoint, BeamParticle, BeamIntensity, FLinearColor(1.f, 0.857892f, 0.036923f), BeamIntensityCurve);
+	
 	//play the shot sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotSound, WeaponData.MuzzleTransform.GetLocation());
-
+	
 	//make muzzle smoke
 	UGameplayStatics::SpawnEmitterAttached(MuzzleSmokeParticle, this, FName("MuzzleFlashSocket"));
-
+	
 	//apply shake
+	
 	auto PlayerController = Cast<AShooterController>(Cast<AShooterCharacter>(GetOwner())->GetController());
 	if (PlayerController && ShootShake)
 		PlayerController->ClientStartCameraShake(ShootShake);
-
+	
 	//add spread
 	CurrentSpread = FMath::Min(WeaponMaxSpread, CurrentSpread + WeaponSpreadPerShot);
-
+	
 	//play sound if gun empty
 	if (LoadedAmmo == 0)
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotEmptySound, GetOwner()->GetActorLocation());
@@ -113,10 +115,6 @@ void UWeaponComponent::Multi_PlayShotFX_Implementation(const FHitResult& HitResu
 bool UWeaponComponent::TryToShoot()
 {
 	SR_TryToShoot();
-	
-	
-
-	
 
 	return true;
 }
@@ -162,49 +160,36 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 	if (!Compensator)
 		return false;
 
-	Compensator->Replay();
+	// Compensator->Replay();
 
-	bool DidHit = false;
+	bool DidHit = GetWorld()->LineTraceSingleByChannel(	HitResult, LookLocation, LookLocation + LookDirection * WeaponData.MaxDistance, ECC_Visibility , CollisionParams);
+
+	// Compensator->ResetFrame();
 	
 	//in case of actor hit
-	if (GetWorld()->LineTraceSingleByChannel(	HitResult,
-												LookLocation,
-												LookLocation + LookDirection * WeaponData.MaxDistance,
-												ECC_Visibility , CollisionParams))
+	if (!DidHit)
 	{
-		//make damages
-		FPointDamageEvent DamageEvent = FPointDamageEvent(WeaponData.Damages, HitResult, LookDirection, UDamageTypeRifle::StaticClass());
-		HitResult.Actor->TakeDamage(WeaponData.Damages, DamageEvent, nullptr, Causer);
-
-		//push hit actors (physics)
-		TArray<UActorComponent*> SkeletalMeshComponents;
-		HitResult.Actor->GetComponents(USkeletalMeshComponent::StaticClass(), SkeletalMeshComponents);
-		for (auto ActorComponent : SkeletalMeshComponents)
-		{
-			USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
-			if (SkeletalMeshComponent->IsSimulatingPhysics())
-				SkeletalMeshComponent->AddForceAtLocation(LookDirection * WeaponData.Knockback, HitResult.ImpactPoint, HitResult.BoneName);
-		}
-		TArray<UActorComponent*> StaticMeshComponents;
-		HitResult.Actor->GetComponents(UStaticMeshComponent::StaticClass(), StaticMeshComponents);
-		for (auto ActorComponent : StaticMeshComponents)
-		{
-			UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent);
-			if (StaticMeshComponent->IsSimulatingPhysics())
-				StaticMeshComponent->AddForceAtLocation(LookDirection * WeaponData.Knockback, HitResult.ImpactPoint, HitResult.BoneName);
-		}
-		DidHit = Cast<ACharacter>(HitResult.Actor) == nullptr; // if collision with non character.
-	}
-	//when no actor hit
-	else
-	{
+		//when no actor hit
 		HitResult.ImpactPoint = LookLocation + LookDirection * WeaponData.MaxDistance;
 		HitResult.Distance = WeaponData.MaxDistance;
+		return false;
 	}
 	
-	Compensator->ResetFrame();
+	//make damages
+	FPointDamageEvent DamageEvent = FPointDamageEvent(WeaponData.Damages, HitResult, LookDirection, UDamageTypeRifle::StaticClass());
+	HitResult.Actor->TakeDamage(WeaponData.Damages, DamageEvent, nullptr, Causer);
 
-	return DidHit;
+	//push hit actors (physics)
+	TArray<UActorComponent*> SkeletalMeshComponents;
+	HitResult.Actor->GetComponents(USkeletalMeshComponent::StaticClass(), SkeletalMeshComponents);
+	for (auto ActorComponent : SkeletalMeshComponents)
+	{
+		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
+		if (SkeletalMeshComponent->IsSimulatingPhysics())
+			SkeletalMeshComponent->AddForceAtLocation(LookDirection * WeaponData.Knockback, HitResult.ImpactPoint, HitResult.BoneName);
+	}
+	
+	return Cast<ACharacter>(HitResult.Actor) == nullptr; // if collision with non character.
 }
 
 void UWeaponComponent::MakeImpactDecal(	const FHitResult& FromHit,

@@ -100,7 +100,7 @@ float AHealthCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Dama
 {
 	AHealthCharacter* DamagingCharacter = Cast<AHealthCharacter>(DamageCauser);
 	
-	if (!IsValid(DamagingCharacter) || IsDead() || GetTeam() == DamagingCharacter->GetTeam()) // friendly fire off.
+	if (!IsValid(DamagingCharacter) || IsDead()) // friendly fire off.
 		return 0.0f;
 	
 	float TotalDamage = 0.f;
