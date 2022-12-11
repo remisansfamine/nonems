@@ -76,39 +76,20 @@ bool UUtilsFunctionsLibrary::LoadDataStructureFromIniFile(OutStructType& OutStru
 	
 	FString ProjectPath = FPaths::ConvertRelativePathToFull(FilePath);
 	ProjectPath.Append(FString(FileName + ".ini"));
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Start loading data");
 	
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*ProjectPath))
 		return false;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Try load file");
-
 	FString fileOutput;
 	if (!FFileHelper::LoadFileToString(fileOutput, *ProjectPath))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Fail to load file");
 		return false;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Try deserialize");
 	
 	TSharedPtr<FJsonObject> jsonObjectOutput;
 	if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(fileOutput), jsonObjectOutput))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Fail deserialize");
 		return false;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Try build object");
 	
 	if (!FJsonObjectConverter::JsonObjectToUStruct<OutStructType>(jsonObjectOutput.ToSharedRef(), &OutStruct))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Fail build object");
 		return false;	
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Success");
 	
 	return true;
 }
