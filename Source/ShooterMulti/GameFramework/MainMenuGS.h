@@ -4,16 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "ShooterMultiPS_Base.h"
 #include "MainMenuGS.generated.h"
-
-USTRUCT(BlueprintType)
-struct FClientSetup
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	FString Name = "";
-};
 
 /**
  * 

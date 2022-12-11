@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "ShooterMulti/Characters/LobbyRoomCharacter.h"
 #include "LobbyRoomGS.generated.h"
 
 UCLASS()
@@ -37,7 +38,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void SpawnSelfCharacter(APlayerController* LocalController);
+	ALobbyRoomCharacter* SpawnSelfCharacter(APlayerController* LocalController);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCharacters();

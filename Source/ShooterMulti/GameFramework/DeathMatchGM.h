@@ -3,14 +3,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "DeathMatchGM.generated.h"
 
-UENUM(BlueprintType)
-enum class ETeam : uint8
-{
-	None = 0,
-	Blue,
-	Red,
-	AI,
-};
 
 UCLASS()
 class SHOOTERMULTI_API ADeathMatchGM : public AGameModeBase

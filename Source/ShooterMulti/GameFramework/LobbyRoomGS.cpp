@@ -41,7 +41,7 @@ void ALobbyRoomGS::BeginPlay()
 	SetupPlayerStart();
 }
 
-void ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
+ALobbyRoomCharacter* ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
 {
 	// Get the self PlayerStart transform
 	const FTransform CharacterTransform = SelfPlayerStart->GetTransform();
@@ -57,6 +57,8 @@ void ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
 	Character->ChangeHeadName("Michel");
 
 	SelfController = LocalController;
+
+	return Character;
 }
 
 void ALobbyRoomGS::UpdateCharacters()

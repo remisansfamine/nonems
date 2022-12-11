@@ -7,6 +7,26 @@
 #include "GameFramework/PlayerState.h"
 #include "ShooterMultiPS_Base.generated.h"
 
+UENUM(BlueprintType)
+enum class ETeam : uint8
+{
+	None = 0,
+	Blue,
+	Red,
+	AI,
+};
+
+USTRUCT(BlueprintType)
+struct FClientSetup
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString Name = "";
+
+	UPROPERTY(BlueprintReadWrite)
+	ETeam Team = ETeam::None;
+};
 /**
  * 
  */
@@ -21,7 +41,10 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite)
     	FString UserName;
-    	
+
+	UPROPERTY(BlueprintReadWrite)
+		FClientSetup ClientSetup;
+	
 protected:
 	void BeginPlay() override;
 
