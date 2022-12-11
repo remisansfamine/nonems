@@ -19,9 +19,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int NbDeath;
 
-	UPROPERTY(BlueprintReadOnly)
-	FString UserName;
-
 	// Used to copy properties from the current PlayerState to the passed one
 	virtual void CopyProperties(class APlayerState* PlayerState);
 	// Used to override the current PlayerState with the properties of the passed one

@@ -2,8 +2,7 @@
 
 #include "MainMenuGM.h"
 
-#include "Engine/Private/DataTableJSON.h"
-#include "JsonUtilities/Public/JsonObjectConverter.h"
+#include "UtilsFunctionsLibrary.h"
 
 FString AMainMenuGM::GetServerDefaultMapName()
 {
@@ -60,21 +59,6 @@ void AMainMenuGM::LaunchServerInstance()
 
 bool AMainMenuGM::SaveServerConfig(const FServerConfig& config)
 {
-	TSharedPtr<FJsonObject> jsonObjectInput = FJsonObjectConverter::UStructToJsonObject(config);
-
-	if (jsonObjectInput == nullptr)
-		return false;
-
-	FString fileInput;
-	
-	if (!FJsonSerializer::Serialize(jsonObjectInput.ToSharedRef(), TJsonWriterFactory<>::Create(&fileInput, 0)))
-		return false;
-	
-	FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
-	ProjectPath.Append(FString("config.ini"));
-	
-	if (!FFileHelper::SaveStringToFile(fileInput, *ProjectPath))
-		return false;
-	
-	return true;
+	const TSharedPtr<FJsonObject> jsonObjectInput = FJsonObjectConverter::UStructToJsonObject(config);
+	return UUtilsFunctionsLibrary::SaveDataStructureToIniFile(config, FPaths::ProjectDir(), "config");
 }

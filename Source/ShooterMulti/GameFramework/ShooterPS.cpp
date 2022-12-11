@@ -22,7 +22,6 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 		{
 			ShooterPlayerState->NbKill = NbKill;
 			ShooterPlayerState->NbKill = NbDeath;
-			ShooterPlayerState->UserName = UserName;
 		}
 	}
 }

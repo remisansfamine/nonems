@@ -15,6 +15,13 @@ class SHOOTERMULTI_API AShooterMultiPS_Base : public APlayerState
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(BlueprintReadWrite)
+		FString ClientLocalName;
+	
+	UPROPERTY(BlueprintReadWrite)
+    	FString UserName;
+    	
 protected:
 	void BeginPlay() override;
 
