@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/CompensatorLabel.h"
 #include "GameFramework/Actor.h"
 #include "LagCompensator.generated.h"
 
@@ -32,7 +33,7 @@ private:
 	TArray<FSavedComponent_Shooter> ComponentsFrames;
 
 	UPROPERTY()
-	TSet<USceneComponent*> SubscribedComponents;
+	TSet<UCompensatorLabel*> SubscribedLabels;
 	
 	void SaveFrame();
 	static void ApplyFrame(const FSavedComponent_Shooter& FrameToApply);
@@ -52,28 +53,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	virtual void SR_FinishCompensation();
 
-	template <typename ComponentT>
-	void SubscribeReplication(const AActor* ActorToSubscribe)
-	{
-		const TSet<UActorComponent*> ActorComponents = ActorToSubscribe->GetComponents();
-
-		for (UActorComponent* ActorComponent : ActorComponents)
-		{
-			if (ComponentT* Collider = Cast<ComponentT>(ActorComponent))
-				SubscribedComponents.Add(Collider);
-		}
-	}
-
-	template <typename ComponentT>
-	void UnsubscribeReplication(const AActor* ActorToUnsubscribe)
-	{
-		TSet<UActorComponent*> ActorComponents = ActorToUnsubscribe->GetComponents();
-
-		for (UActorComponent* ActorComponent : ActorComponents)
-		{
-			// Keep only colliders
-			if (const UPrimitiveComponent* Collider = Cast<UPrimitiveComponent>(ActorComponent))
-				SubscribedComponents.Remove(Collider);
-		}
-	}
+	virtual void SubscribeLabel(UCompensatorLabel* LabelToSubscribe);
+	virtual void UnsubscribeLabel(UCompensatorLabel* LabelToUnsubscribe);
 };

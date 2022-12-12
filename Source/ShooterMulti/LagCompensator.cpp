@@ -50,8 +50,11 @@ void ALagCompensator::SaveFrame()
 
 	Frame.TimeStamp = CurrentTimeStamp;
 
-	for (USceneComponent* Component : SubscribedComponents)
-		Frame.ComponentsStates.Add({Component, Component->GetComponentTransform()});
+	for (UCompensatorLabel* Compensator : SubscribedLabels)
+	{
+		for (USceneComponent* Compensated : Compensator->CompensatedComponents)
+			Frame.ComponentsStates.Add({Compensated, Compensated->GetComponentTransform()});
+	}
 
 	ComponentsFrames.Add(Frame);
 }
@@ -76,4 +79,14 @@ void ALagCompensator::Tick(float DeltaTime)
 
 	if (GetLocalRole() == ROLE_Authority)
 		SaveFrame();
+}
+
+void ALagCompensator::SubscribeLabel(UCompensatorLabel* LabelToSubscribe)
+{
+	SubscribedLabels.Add(LabelToSubscribe);
+}
+
+void ALagCompensator::UnsubscribeLabel(UCompensatorLabel* LabelToUnsubscribe)
+{
+	SubscribedLabels.Remove(LabelToUnsubscribe);
 }

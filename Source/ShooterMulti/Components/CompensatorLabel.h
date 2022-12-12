@@ -16,9 +16,38 @@ public:
 	// Sets default values for this component's properties
 	UCompensatorLabel();
 
+	UPROPERTY()
+	TArray<USceneComponent*> CompensatedComponents;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	
+	template <typename ComponentT>
+	void SubscribeReplication(const AActor* ActorToSubscribe)
+	{
+		const TSet<UActorComponent*> ActorComponents = ActorToSubscribe->GetComponents();
+
+		for (UActorComponent* ActorComponent : ActorComponents)
+		{
+			if (ComponentT* Component = Cast<ComponentT>(ActorComponent))
+				CompensatedComponents.Add(Component);
+		}
+	}
+
+	template <typename ComponentT>
+	void UnsubscribeReplication(const AActor* ActorToUnsubscribe)
+	{
+		TSet<UActorComponent*> ActorComponents = ActorToUnsubscribe->GetComponents();
+
+		for (UActorComponent* ActorComponent : ActorComponents)
+		{
+			// Keep only colliders
+			if (const ComponentT* Component = Cast<ComponentT>(ActorComponent))
+				CompensatedComponents.Remove(Component);
+		}
+	}
 };
