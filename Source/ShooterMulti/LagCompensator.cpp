@@ -48,8 +48,10 @@ void ALagCompensator::ClearOldFrames()
 	{
 		for (TArray<FSavedComponent_Shooter>::TIterator It(Profile.ComponentsFrames); It; ++It)
 		{
-			if (CurrentTimeStamp - It->TimeStamp > MaxTimeStampOffset)
-				It.RemoveCurrent();
+			if (CurrentTimeStamp - It->TimeStamp < MaxTimeStampOffset)
+				break;
+			
+			It.RemoveCurrent();
 		}
 	}
 }
