@@ -18,23 +18,20 @@ void UCompensatorLabel::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (GetOwner()->GetLocalRole() == ROLE_Authority)
-	{
-		SubscribeReplication<UPrimitiveComponent>(GetOwner());
-		if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
-			GS->GetLagCompensator()->SubscribeLabel(this);
-	}
+	if (!GetOwner()->HasAuthority())
+		return;
+	
+	SubscribeReplication<UPrimitiveComponent>(GetOwner());
+	
+	if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
+		GS->GetLagCompensator()->SubscribeLabel(this);
 }
 
 void UCompensatorLabel::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (EndPlayReason != EEndPlayReason::Type::Destroyed)
+	if (EndPlayReason != EEndPlayReason::Type::Destroyed || !GetOwner()->HasAuthority())
 		return;
 	
-	if (GetOwner()->GetLocalRole() == ROLE_Authority)
-	{
-		if (UWorld* World = GetWorld())
-		if (ADeathMatchGS* GS = World->GetGameState<ADeathMatchGS>())
-			GS->GetLagCompensator()->UnsubscribeLabel(this);
-	}
+	if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
+		GS->GetLagCompensator()->UnsubscribeLabel(this);
 }

@@ -19,7 +19,7 @@ void ALagCompensator::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (GetLocalRole() == ROLE_Authority)
+	if (HasAuthority())
 	{
 		if (ADeathMatchGS* GS = Cast<ADeathMatchGS>(GetWorld()->GetGameState()))
 			GS->SetLagCompensator(this);
@@ -95,7 +95,7 @@ void ALagCompensator::Tick(float DeltaTime)
 
 	CurrentTimeStamp = GetWorld()->RealTimeSeconds;
 
-	if (GetLocalRole() == ROLE_Authority)
+	if (HasAuthority())
 	{
 		ClearOldFrames();
 		SaveFrame();
