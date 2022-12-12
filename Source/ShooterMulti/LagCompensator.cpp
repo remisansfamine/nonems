@@ -4,7 +4,6 @@
 #include "LagCompensator.h"
 
 #include "GameFramework/DeathMatchGS.h"
-#include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine.h"
 
@@ -31,7 +30,7 @@ void ALagCompensator::BeginPlay()
 
 void ALagCompensator::SR_StartCompensation_Implementation(float TimeStamp)
 {
-	for (const FSavedCollider_Shooter& Frame : CollidersFrames)
+	for (const FSavedComponent_Shooter& Frame : ComponentsFrames)
 	{
 		if (Frame.TimeStamp >= TimeStamp)
 		{
@@ -47,27 +46,25 @@ void ALagCompensator::SaveFrame()
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), Actors);
 
-	FSavedCollider_Shooter Frame;
+	FSavedComponent_Shooter Frame;
 
 	Frame.TimeStamp = CurrentTimeStamp;
 
-	for (UPrimitiveComponent* Collider : SubscribedPrimitives)
-		Frame.CollidersStates.Add({Collider, Collider->GetComponentTransform()});
+	for (USceneComponent* Component : SubscribedComponents)
+		Frame.ComponentsStates.Add({Component, Component->GetComponentTransform()});
 
-	CurrentFrame = Frame;
-	
-	CollidersFrames.Add(Frame);
+	ComponentsFrames.Add(Frame);
 }
 
-void ALagCompensator::ApplyFrame(const FSavedCollider_Shooter& FrameToApply)
+void ALagCompensator::ApplyFrame(const FSavedComponent_Shooter& FrameToApply)
 {
-	for (auto& ColliderFrame : FrameToApply.CollidersStates)
-		ColliderFrame.Collider->SetWorldTransform(ColliderFrame.Transform);
+	for (auto& ComponentFrame : FrameToApply.ComponentsStates)
+		ComponentFrame.Component->SetWorldTransform(ComponentFrame.Transform);
 }
 
 void ALagCompensator::SR_FinishCompensation_Implementation()
 {
-	ApplyFrame(CurrentFrame);
+	ApplyFrame(ComponentsFrames.Last());
 }
 
 // Called every frame
@@ -79,26 +76,4 @@ void ALagCompensator::Tick(float DeltaTime)
 
 	if (GetLocalRole() == ROLE_Authority)
 		SaveFrame();
-}
-
-void ALagCompensator::SubscribeReplication(const AActor* ActorToSubscribe)
-{
-	const TSet<UActorComponent*> ActorComponents = ActorToSubscribe->GetComponents();
-
-	for (UActorComponent* ActorComponent : ActorComponents)
-	{
-		if (UPrimitiveComponent* Collider = Cast<UPrimitiveComponent>(ActorComponent))
-			SubscribedPrimitives.Add(Collider);
-	}
-}
-
-void ALagCompensator::UnsubscribeReplication(const AActor* ActorToUnsubscribe)
-{
-	TSet<UActorComponent*> ActorComponents = ActorToUnsubscribe->GetComponents();
-
-	for (UActorComponent* ActorComponent : ActorComponents)
-	{
-		if (const UPrimitiveComponent* Collider = Cast<UPrimitiveComponent>(ActorComponent))
-			SubscribedPrimitives.Remove(Collider);
-	}
 }

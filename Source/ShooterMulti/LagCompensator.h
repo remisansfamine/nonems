@@ -16,30 +16,28 @@ public:
 	ALagCompensator();
 
 private:
-	class FSavedCollider_Shooter 
+	class FSavedComponent_Shooter 
 	{
 	public:
-		struct ColliderState
+		struct ComponentState
 		{
-			UPrimitiveComponent* Collider;
+			USceneComponent* Component;
 			FTransform Transform;
 		};
 		
 		float TimeStamp;
-		TArray<ColliderState> CollidersStates;
+		TArray<ComponentState> ComponentsStates;
 	};
 	
-	TArray<FSavedCollider_Shooter> CollidersFrames;
-	FSavedCollider_Shooter CurrentFrame;
+	TArray<FSavedComponent_Shooter> ComponentsFrames;
 
 	UPROPERTY()
-	TSet<UPrimitiveComponent*> SubscribedPrimitives;
+	TSet<USceneComponent*> SubscribedComponents;
 	
 	void SaveFrame();
-	static void ApplyFrame(const FSavedCollider_Shooter& FrameToApply);
+	static void ApplyFrame(const FSavedComponent_Shooter& FrameToApply);
 	
 	float CurrentTimeStamp = 0.f;
-	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,7 +52,28 @@ public:
 	UFUNCTION(Server, Reliable)
 	virtual void SR_FinishCompensation();
 
-	void SubscribeReplication(const AActor* ActorToSubscribe);
-	void UnsubscribeReplication(const AActor* ActorToUnsubscribe);
+	template <typename ComponentT>
+	void SubscribeReplication(const AActor* ActorToSubscribe)
+	{
+		const TSet<UActorComponent*> ActorComponents = ActorToSubscribe->GetComponents();
 
+		for (UActorComponent* ActorComponent : ActorComponents)
+		{
+			if (ComponentT* Collider = Cast<ComponentT>(ActorComponent))
+				SubscribedComponents.Add(Collider);
+		}
+	}
+
+	template <typename ComponentT>
+	void UnsubscribeReplication(const AActor* ActorToUnsubscribe)
+	{
+		TSet<UActorComponent*> ActorComponents = ActorToUnsubscribe->GetComponents();
+
+		for (UActorComponent* ActorComponent : ActorComponents)
+		{
+			// Keep only colliders
+			if (const UPrimitiveComponent* Collider = Cast<UPrimitiveComponent>(ActorComponent))
+				SubscribedComponents.Remove(Collider);
+		}
+	}
 };

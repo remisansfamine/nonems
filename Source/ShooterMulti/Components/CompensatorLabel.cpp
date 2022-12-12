@@ -23,7 +23,7 @@ void UCompensatorLabel::BeginPlay()
 	if (GetOwner()->GetLocalRole() == ROLE_Authority)
 	{
 		if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
-			GS->GetLagCompensator()->SubscribeReplication(GetOwner());
+			GS->GetLagCompensator()->SubscribeReplication<UPrimitiveComponent>(GetOwner());
 	}
 }
 
@@ -36,6 +36,6 @@ void UCompensatorLabel::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (UWorld* World = GetWorld())
 		if (ADeathMatchGS* GS = World->GetGameState<ADeathMatchGS>())
-			GS->GetLagCompensator()->UnsubscribeReplication(GetOwner());
+			GS->GetLagCompensator()->UnsubscribeReplication<UPrimitiveComponent>(GetOwner());
 	}
 }
