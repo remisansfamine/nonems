@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "Net/UnrealNetwork.h"
 
 void ADeathMatchGS::BeginPlay()
 {
@@ -23,6 +24,14 @@ void ADeathMatchGS::BeginPlay()
 	
 	CurrentTime = GameMode->GameTime;
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ADeathMatchGS::AdvanceTimer, 1.0f, true);
+}
+
+void ADeathMatchGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ADeathMatchGS, RedTeamScore);
+	DOREPLIFETIME(ADeathMatchGS, BlueTeamScore);
+	DOREPLIFETIME(ADeathMatchGS, CurrentTime);
 }
 
 void ADeathMatchGS::AdvanceTimer()
@@ -41,15 +50,47 @@ void ADeathMatchGS::AdvanceTimer()
 	}
 }
 
-void ADeathMatchGS::AddScore(ETeam Team)
+void ADeathMatchGS::IncreaseScore(ETeam Team)
 {
 	if (!GameMode)
 		return;
-	
-	if (Team == ETeam::Red && ++RedTeamScore == GameMode->MaxKill)
-		UpdateEndHud(ETeam::Red);
-	else if (Team == ETeam::Blue && ++BlueTeamScore == GameMode->MaxKill)
-		UpdateEndHud(ETeam::Blue);
+
+	switch (Team)
+	{
+	case ETeam::Red:
+		if (++RedTeamScore == GameMode->MaxKill)
+			UpdateEndHud(Team);
+
+		break;
+
+	case ETeam::Blue:
+		if (++BlueTeamScore == GameMode->MaxKill)
+			UpdateEndHud(Team);
+		
+		break;
+
+	default:
+		break;
+	}
+}
+void ADeathMatchGS::DecreaseScore(ETeam Team)
+{
+	if (!GameMode)
+		return;
+
+	switch (Team)
+	{
+	case ETeam::Red:
+		--RedTeamScore;
+		break;
+
+	case ETeam::Blue:
+		--BlueTeamScore;
+		break;
+
+	default:
+		break;
+	}
 }
 
 void ADeathMatchGS::AddPlayerState(APlayerState* PlayerState)

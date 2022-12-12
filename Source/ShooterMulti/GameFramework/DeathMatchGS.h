@@ -20,13 +20,13 @@ protected:
 
 	UPROPERTY(Transient, BlueprintReadOnly, Category = "Shooter|GameState")
 	ADeathMatchGM* GameMode = nullptr;
-	UPROPERTY(BlueprintReadOnly, Category = "Shooter|GameState")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 CurrentTime;
 	UPROPERTY(BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 CurrentAICount = 0;
-	UPROPERTY(BlueprintReadOnly, Category = "Shooter|GameState")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 RedTeamScore = 0;
-	UPROPERTY(BlueprintReadOnly, Category = "Shooter|GameState")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 BlueTeamScore = 0;
 
 	void AdvanceTimer();
@@ -45,8 +45,10 @@ public:
 	GameRestartEvent OnResetAfterDelay;
 
 	void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void AddScore(ETeam Team);
+	void IncreaseScore(ETeam Team);
+	void DecreaseScore(ETeam Team);
 	void AddPlayerState(APlayerState* PlayerState) override;
 	void RemovePlayerState(APlayerState* PlayerState) override;
 

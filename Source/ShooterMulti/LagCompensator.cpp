@@ -109,11 +109,12 @@ void ALagCompensator::SubscribeLabel(UCompensatorLabel* LabelToSubscribe)
 
 void ALagCompensator::UnsubscribeLabel(UCompensatorLabel* LabelToUnsubscribe)
 {
-	const LabelProfile* ProfilePtr = SubscribedLabels.FindByPredicate([LabelToUnsubscribe](const LabelProfile& Profile)
+	const int IndexToRemove = SubscribedLabels.IndexOfByPredicate([LabelToUnsubscribe](const LabelProfile& Profile)
 	{
 		return Profile.GetLabel() == LabelToUnsubscribe;
 	});
 
-	if (ProfilePtr)
-		SubscribedLabels.Remove(*ProfilePtr);
+	if (IndexToRemove != INDEX_NONE)
+		SubscribedLabels.RemoveAtSwap(IndexToRemove, 1, false);
+	
 }

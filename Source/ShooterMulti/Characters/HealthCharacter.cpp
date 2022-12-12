@@ -72,6 +72,12 @@ bool AHealthCharacter::IsDead()
 	return Health <= 0.0f;
 }
 
+void AHealthCharacter::Multi_OnDeath_Implementation()
+{
+	ActivateRagdoll();
+	StartDisapear();
+}
+
 float AHealthCharacter::GetMaxHealth() const
 {
 	return MaxHealth;
@@ -98,36 +104,39 @@ void AHealthCharacter::UpdateSkinColor()
 
 float AHealthCharacter::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
+	if (!HasAuthority())
+		return 0.f;
+	
 	AHealthCharacter* DamagingCharacter = Cast<AHealthCharacter>(DamageCauser);
 	
-	if (!IsValid(DamagingCharacter) || IsDead()) // friendly fire off.
+	if (!IsValid(DamagingCharacter) || IsDead())
 		return 0.0f;
 	
 	float TotalDamage = 0.f;
 
 	const FPointDamageEvent* PointDamageEvent = nullptr;
-
+	
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		PointDamageEvent = (FPointDamageEvent*)& DamageEvent;
+		PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
 
-	bool IsHeadshot = false;
 	if (!IsDead())
 	{
-		USoundBase* CrtHitSound = PunchHitSound;
-		
+		bool IsHeadshot = false;
+		bool IsPunch = true;
+
 		if (PointDamageEvent && PointDamageEvent->HitInfo.PhysMaterial.Get())
 		{
+			IsPunch = false;
 			TotalDamage = DamageAmount * PointDamageEvent->HitInfo.PhysMaterial->DestructibleDamageThresholdScale;
 
 			IsHeadshot = PointDamageEvent->HitInfo.PhysMaterial->DestructibleDamageThresholdScale > 1.0f;
-			CrtHitSound = IsHeadshot ? HeadshotHitSound : HitSound;
 		}
 		else
 			TotalDamage = DamageAmount;
 
 		Health = FMath::Max(0.f, Health - TotalDamage);
-		if (CrtHitSound)
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), CrtHitSound, PointDamageEvent->HitInfo.Location);
+
+		Multi_OnTakeDamage(IsHeadshot, IsPunch, PointDamageEvent->HitInfo.Location);
 	}
 	
 	if (IsDead())
@@ -136,19 +145,33 @@ float AHealthCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Dama
 		if (GetTeam() == ETeam::Blue || GetTeam() == ETeam::Red)
 		{
 			ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
+
+			const ETeam DamagingTeam = DamagingCharacter->GetTeam();
+			
 			// Check if team kill another team
-			if (GetTeam() != DamagingCharacter->GetTeam())
-			{
-				// Add score to the killed character opponent team
-				GameState->AddScore(GetTeam() == ETeam::Blue ? ETeam::Red : ETeam::Blue);
-			}
+			if (GetTeam() == DamagingTeam)
+				GameState->DecreaseScore(DamagingTeam);
+			else
+				GameState->IncreaseScore(DamagingTeam);
 		}
 
-		ActivateRagdoll();
-		StartDisapear();
+		Multi_OnDeath();
 	}
 
 	return TotalDamage;
+}
+
+void AHealthCharacter::Multi_OnTakeDamage_Implementation(bool IsHeadshot, bool IsPunch, const FVector& HitLocation)
+{
+	USoundBase* CrtHitSound = PunchHitSound;
+
+	if (!IsPunch)
+	{
+		CrtHitSound = IsHeadshot ? HeadshotHitSound : HitSound;
+	}
+
+	if (CrtHitSound)
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CrtHitSound, HitLocation);
 }
 
 float AHealthCharacter::GainHealth(float GainAmount)

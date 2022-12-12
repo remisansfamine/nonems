@@ -65,6 +65,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Character|Health")
 	bool IsDead();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_OnDeath();
+
 	UFUNCTION(BlueprintCallable, Category = "Character|Health")
 	float GetMaxHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Character|Health")
@@ -80,6 +83,9 @@ public:
 								 class AController*		EventInstigator,
 								 AActor*				DamageCauser) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_OnTakeDamage(bool IsHeadshot, bool IsPunch, const FVector& HitLocation);
+	
 	UFUNCTION(BlueprintCallable, Category = "Character|Health")
 	float GainHealth(float Amount);
 	UFUNCTION(BlueprintCallable, Category = "Character|Health")
