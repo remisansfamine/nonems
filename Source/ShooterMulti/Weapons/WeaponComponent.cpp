@@ -32,6 +32,7 @@ void UWeaponComponent::BeginPlay()
 void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UWeaponComponent, MaxAmmo);
 	DOREPLIFETIME(UWeaponComponent, LoadedAmmo);
 	DOREPLIFETIME(UWeaponComponent, AmmoCount);
 }

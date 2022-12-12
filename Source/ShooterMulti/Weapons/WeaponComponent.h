@@ -101,7 +101,7 @@ protected:
 	
 public:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
+	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))
 	int MaxAmmo = 50;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere, Category = "Character|Shooter|Weapon", meta = (ClampMin = "0"))

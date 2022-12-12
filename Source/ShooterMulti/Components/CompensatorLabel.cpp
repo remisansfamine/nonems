@@ -31,7 +31,8 @@ void UCompensatorLabel::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (EndPlayReason != EEndPlayReason::Type::Destroyed || !GetOwner()->HasAuthority())
 		return;
-	
-	if (ADeathMatchGS* GS = GetWorld()->GetGameState<ADeathMatchGS>())
+
+	if (UWorld* World = GetWorld())
+	if (ADeathMatchGS* GS = World->GetGameState<ADeathMatchGS>())
 		GS->GetLagCompensator()->UnsubscribeLabel(this);
 }
