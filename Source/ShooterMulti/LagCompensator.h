@@ -30,11 +30,23 @@ private:
 		TArray<ComponentState> ComponentsStates;
 	};
 	
-	TArray<FSavedComponent_Shooter> ComponentsFrames;
+	class LabelProfile
+	{
+		UCompensatorLabel* Label = nullptr;
+		
+	public:
+		TArray<FSavedComponent_Shooter> ComponentsFrames;
+		
+		LabelProfile(UCompensatorLabel* Label) : Label(Label) { }
+		
+		UCompensatorLabel* GetLabel() const { return Label; }
 
-	UPROPERTY()
-	TSet<UCompensatorLabel*> SubscribedLabels;
-	
+		bool operator==(const LabelProfile& Other) const { return Label == Other.Label;}
+	};
+
+	TArray<LabelProfile> SubscribedLabels;
+
+	void ClearOldFrames();
 	void SaveFrame();
 	static void ApplyFrame(const FSavedComponent_Shooter& FrameToApply);
 	
@@ -43,7 +55,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-public:	
+public:
+	UPROPERTY(EditAnywhere)
+	float MaxTimeStampOffset = 0.5f;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

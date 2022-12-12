@@ -3,8 +3,6 @@
 
 #include "CompensatorLabel.h"
 
-#include "ChaosInterfaceWrapperCore.h"
-#include "IDetailTreeNode.h"
 #include "ShooterMulti/GameFramework/DeathMatchGS.h"
 
 // Sets default values for this component's properties
