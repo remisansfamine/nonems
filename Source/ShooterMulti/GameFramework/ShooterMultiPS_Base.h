@@ -26,6 +26,9 @@ struct FClientSetup
 
 	UPROPERTY(BlueprintReadWrite)
 	ETeam Team = ETeam::None;
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsReady = false;
 };
 /**
  * 
@@ -36,13 +39,7 @@ class SHOOTERMULTI_API AShooterMultiPS_Base : public APlayerState
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite)
-		FString ClientLocalName;
-	
-	UPROPERTY(BlueprintReadWrite)
-    	FString UserName;
-
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing = Rep_ClientDatas, BlueprintReadWrite)
 		FClientSetup ClientSetup;
 	
 protected:
@@ -53,4 +50,12 @@ public:
 	virtual void CopyProperties(class APlayerState* PlayerState);
 	// Used to override the current PlayerState with the properties of the passed one
 	virtual void OverrideWith(class APlayerState* PlayerState);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SR_SetClientSetup(const FClientSetup& InSetup);
+	
+	UFUNCTION()
+	virtual void Rep_ClientDatas();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

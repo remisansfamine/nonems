@@ -3,7 +3,7 @@
 
 #include "ShooterMultiPS_Base.h"
 
-#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5, FColor::White,text)
+#include "Net/UnrealNetwork.h"
 
 void AShooterMultiPS_Base::BeginPlay()
 {
@@ -19,8 +19,7 @@ void AShooterMultiPS_Base::CopyProperties(APlayerState* PlayerState)
 		AShooterMultiPS_Base* BasePlayerState = Cast<AShooterMultiPS_Base>(PlayerState);
 		if (BasePlayerState)
 		{
-			BasePlayerState->UserName = UserName;
-			BasePlayerState->ClientLocalName = ClientLocalName;
+			BasePlayerState->ClientSetup = ClientSetup;
 		}
 	}
 }
@@ -35,8 +34,24 @@ void AShooterMultiPS_Base::OverrideWith(APlayerState* PlayerState)
 
 		if (BasePlayerState)
 		{
-
+			ClientSetup = BasePlayerState->ClientSetup;
 		}
 	}
+}
+
+void AShooterMultiPS_Base::SR_SetClientSetup_Implementation(const FClientSetup& InSetup)
+{
+	ClientSetup = InSetup;
+}
+
+void AShooterMultiPS_Base::Rep_ClientDatas()
+{
+}
+
+void AShooterMultiPS_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AShooterMultiPS_Base, ClientSetup);
 }
 
