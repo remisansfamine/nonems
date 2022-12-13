@@ -38,13 +38,13 @@ protected:
 	EShooterCharacterState State;
 	EShooterCharacterState PrevState;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	float AimPitch;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	float AimYaw;
 
-	void UpdateAimOffsets(float Pitch, float Yaw);
+	void SR_UpdateAimOffsets();
 
 	void PlayPushButtonAnim();
 
@@ -125,8 +125,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void PushButton();
-	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void InflictPushButton();
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Character|Shooter")
+	void SR_InflictPushButton();
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void Punch();

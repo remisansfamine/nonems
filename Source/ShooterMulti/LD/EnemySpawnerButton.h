@@ -13,12 +13,18 @@ class SHOOTERMULTI_API AEnemySpawnerButton : public AActor, public IResetable
 	
 protected:
 
+	UPROPERTY(ReplicatedUsing = OnRep_TeamChange)
 	ETeam mTeam = ETeam::None;
+	
 	FTimerHandle mSpawnTimerHandle;
 
 	virtual void BeginPlay() override;
-	
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_TeamChange() const;
+	
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintInternalUseOnly)
@@ -27,14 +33,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	USoundBase* ActivateSound;
 
+	UPROPERTY()
 	UMaterialInstanceDynamic* material;
 
 	AEnemySpawnerButton();
 
 	void Activate(ETeam team);
 
-	UFUNCTION()
-	void SetTeam(ETeam team);
+	UFUNCTION(Client, Reliable)
+	void CL_OnActivate();
 
 	UFUNCTION()
 	void Reset() override;

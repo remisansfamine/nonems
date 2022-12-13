@@ -61,7 +61,7 @@ void UShooterCharacterAnim::AnimNotify_PunchHit(UAnimNotify* Notify) const
 void UShooterCharacterAnim::AnimNotify_PushButton(UAnimNotify* Notify) const
 {
 	if (ShooterCharacter)
-		ShooterCharacter->InflictPushButton();
+		ShooterCharacter->SR_InflictPushButton();
 }
 
 

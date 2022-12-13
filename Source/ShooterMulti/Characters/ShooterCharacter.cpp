@@ -67,12 +67,6 @@ UPlayerCameraComponent* AShooterCharacter::GetCameraComponent()
 	return Camera;
 }
 
-void AShooterCharacter::UpdateAimOffsets(float Pitch, float Yaw)
-{
-	AimPitch = Pitch;
-	AimYaw = Yaw;
-}
-
 void AShooterCharacter::InitPlayer()
 {
 	const FPlayerInfo& PlayerInfo = static_cast<UPlayerGI*>(GetGameInstance())->GetUserInfo();
@@ -115,12 +109,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	if (bIsShooting && !Weapon->TryToShoot())
 		StartReload();
 
-	// Anim aim offsets
-	FRotator LookRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation());
-	AimPitch = UKismetMathLibrary::ClampAngle(LookRotation.Pitch, -90.f, 90.f);
-	AimYaw = UKismetMathLibrary::ClampAngle(LookRotation.Yaw, -90.f, 90.f);
-
-	UpdateAimOffsets(AimPitch, AimYaw);
+	SR_UpdateAimOffsets();
 
 	Camera->ShakeCamera(uint8(State), GetLastMovementInputVector().Size());
 }
@@ -240,11 +229,8 @@ void AShooterCharacter::PushButton()
 	PlayPushButtonAnim();
 }
 
-void AShooterCharacter::InflictPushButton()
+void AShooterCharacter::SR_InflictPushButton_Implementation()
 {
-	if (!HasAuthority())
-		return;
-
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors, TSubclassOf<AEnemySpawnerButton>());
 
@@ -253,6 +239,17 @@ void AShooterCharacter::InflictPushButton()
 		if (AEnemySpawnerButton* Button = Cast<AEnemySpawnerButton>(OverlappingActors[0]))
 			Button->Activate(Team);
 	}
+}
+
+void AShooterCharacter::SR_UpdateAimOffsets()
+{
+	if (!HasAuthority())
+		return;
+	
+	// Anim aim offsets
+	FRotator LookRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation());
+	AimPitch = UKismetMathLibrary::ClampAngle(LookRotation.Pitch, -90.f, 90.f);
+	AimYaw = UKismetMathLibrary::ClampAngle(LookRotation.Yaw, -90.f, 90.f);
 }
 
 void AShooterCharacter::PlayPushButtonAnim()
