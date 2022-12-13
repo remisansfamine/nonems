@@ -9,7 +9,6 @@
 #include "../Movements/ShooterCharacterMovement.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/UObjectGlobals.h"
-#include "Animation/AnimBlueprint.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
@@ -243,14 +242,15 @@ void AShooterCharacter::PushButton()
 
 void AShooterCharacter::InflictPushButton()
 {
+	if (!HasAuthority())
+		return;
+
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors, TSubclassOf<AEnemySpawnerButton>());
 
 	if (OverlappingActors.Num() > 0)
 	{
-		AEnemySpawnerButton* Button = Cast<AEnemySpawnerButton>(OverlappingActors[0]);
-		
-		if (Button)
+		if (AEnemySpawnerButton* Button = Cast<AEnemySpawnerButton>(OverlappingActors[0]))
 			Button->Activate(Team);
 	}
 }

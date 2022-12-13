@@ -91,8 +91,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Health")
 	void ResetHealth();
 
-	UFUNCTION(BlueprintCallable, Category = "Character|Health")
-	void InflictPunch();
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Character|Health")
+	void SR_InflictPunch(float TimeStamp);
 
 	void UpdateSkinColor();
 

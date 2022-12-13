@@ -1,6 +1,7 @@
 
 #include "ShooterCharacterAnim.h"
 #include "AnimationUtilities.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameFramework/PawnMovementComponent.h"
 	
 void UShooterCharacterAnim::NativeInitializeAnimation()
@@ -54,7 +55,7 @@ void UShooterCharacterAnim::PlayHitMontage()
 void UShooterCharacterAnim::AnimNotify_PunchHit(UAnimNotify* Notify) const
 {
 	if (ShooterCharacter)
-		ShooterCharacter->InflictPunch();
+		ShooterCharacter->SR_InflictPunch(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 }
 
 void UShooterCharacterAnim::AnimNotify_PushButton(UAnimNotify* Notify) const

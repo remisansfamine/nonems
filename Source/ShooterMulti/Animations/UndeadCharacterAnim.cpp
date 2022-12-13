@@ -1,6 +1,8 @@
 
 #include "UndeadCharacterAnim.h"
 
+#include "GameFramework/GameStateBase.h"
+
 void UUndeadCharacterAnim::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -37,5 +39,5 @@ void UUndeadCharacterAnim::PlayHitMontage()
 void UUndeadCharacterAnim::AnimNotify_PunchHit(UAnimNotify* Notify) const
 {
 	if (IsValid(UndeadCharacter))
-		UndeadCharacter->InflictPunch();
+		UndeadCharacter->SR_InflictPunch(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 }

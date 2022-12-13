@@ -187,10 +187,8 @@ void AHealthCharacter::ResetHealth()
 	Health = MaxHealth;
 }
 
-void AHealthCharacter::InflictPunch()
+void AHealthCharacter::SR_InflictPunch_Implementation(float TimeStamp)
 {
-	TArray<struct FHitResult> OutHits;
-	
 	FVector StartPos = GetActorLocation();
 	FVector EndPos = PunchCollision->GetComponentLocation();
 
@@ -198,18 +196,29 @@ void AHealthCharacter::InflictPunch()
 	Params.AddIgnoredActor(this);
 	Params.bTraceComplex = true;
 
+	TArray<FHitResult> OutHits;
+
+	ALagCompensator* Compensator = GetWorld()->GetGameState<ADeathMatchGS>()->GetLagCompensator();
+
+	if (!Compensator)
+		return;
+
+	Compensator->SR_StartCompensation(TimeStamp);
+
 	GetWorld()->SweepMultiByObjectType(
 		OutHits, StartPos, EndPos, FQuat::Identity, 0,
 		FCollisionShape::MakeSphere(PunchCollision->GetUnscaledSphereRadius()),
 		Params);
+	
+	Compensator->SR_FinishCompensation();
 
 	TArray<AHealthCharacter*> HitActors;
 
-	for (auto& Hit : OutHits)
+	for (FHitResult& Hit : OutHits)
 	{
 		AHealthCharacter* Character = Cast<AHealthCharacter>(Hit.Actor.Get());
 
-		if (Character && GetTeam() != Character->GetTeam() && !HitActors.Contains(Character))
+		if (Character && !HitActors.Contains(Character))
 		{
 			FPointDamageEvent DamageEvent = FPointDamageEvent(PunchDamage, Hit, GetActorForwardVector(), UDamageTypePunch::StaticClass());
 			Character->TakeDamage(PunchDamage, DamageEvent, nullptr, this);

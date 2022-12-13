@@ -47,9 +47,14 @@ void AEnemySpawnerButton::SetTeam(ETeam team)
 	if (!material)
 		return;
 
-	FLinearColor color = mTeam == ETeam::Blue ? FLinearColor::Blue : mTeam == ETeam::Red ? FLinearColor::Red : FLinearColor::Green;
-
-	material->SetVectorParameterValue("ColorActive", color);
+	TMap<ETeam, FLinearColor> ColorMap {
+		{ ETeam::Blue, FLinearColor::Blue },
+		{ ETeam::Red, FLinearColor::Red },
+		{ ETeam::None, FLinearColor::Green },
+		{ ETeam::AI, FLinearColor::Green }
+	};
+	
+	material->SetVectorParameterValue("ColorActive", ColorMap[mTeam]);
 }
 
 void AEnemySpawnerButton::Reset()
