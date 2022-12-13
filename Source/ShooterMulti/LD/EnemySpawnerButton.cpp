@@ -56,8 +56,7 @@ void AEnemySpawnerButton::Activate(ETeam team)
 	
 	auto lambda = [this]()
 	{
-		auto dir = AUndeadDirector::GetInstance();
-		dir->SpawnEnemy(GetActorLocation(), GetActorRotation(), mTeam);
+		AUndeadDirector::GetInstance()->SpawnEnemy(GetActorLocation(), GetActorRotation(), mTeam);
 	};
 	
 	GetWorld()->GetTimerManager().SetTimer(mSpawnTimerHandle, lambda, SecondPerSpawn, true);

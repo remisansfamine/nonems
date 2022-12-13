@@ -58,7 +58,8 @@ void AUndeadDirector::SpawnTickEnemy()
 	
 	const int rand = FMath::RandRange(0, SpawnPoints.Num() - 1);
 
-	SpawnEnemy(SpawnPoints[rand]->GetActorLocation(), SpawnPoints[rand]->GetActorRotation());
+	const AActor* SpawnPoint = SpawnPoints[rand];
+	SpawnEnemy(SpawnPoint->GetActorLocation(), SpawnPoint->GetActorRotation());
 }
 
 AUndeadDirector* AUndeadDirector::GetInstance()
