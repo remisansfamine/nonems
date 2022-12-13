@@ -115,7 +115,7 @@ void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, 
 
 bool UWeaponComponent::TryToShoot()
 {
-	SR_TryToShoot(GetWorld()->RealTimeSeconds);
+	SR_TryToShoot(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 
 	return true;
 }

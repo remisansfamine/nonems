@@ -45,19 +45,23 @@ private:
 	};
 
 	TArray<LabelProfile> SubscribedLabels;
+	
+	float CurrentTimeStamp = 0.f;
 
+	UPROPERTY()
+	class ADeathMatchGS* DeathMatchGS = nullptr;
+	
 	void ClearOldFrames();
 	void SaveFrame();
 	static void ApplyFrame(const FSavedComponent_Shooter& FrameToApply);
-	
-	float CurrentTimeStamp = 0.f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 public:
 	UPROPERTY(EditAnywhere)
-	float MaxTimeStampOffset = 0.5f;
+	float MaxTimeStampOffset = 2.f;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

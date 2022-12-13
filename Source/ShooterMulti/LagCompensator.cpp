@@ -21,8 +21,9 @@ void ALagCompensator::BeginPlay()
 	
 	if (HasAuthority())
 	{
-		if (ADeathMatchGS* GS = Cast<ADeathMatchGS>(GetWorld()->GetGameState()))
-			GS->SetLagCompensator(this);
+		DeathMatchGS = GetWorld()->GetGameState<ADeathMatchGS>();
+		if (DeathMatchGS)
+			DeathMatchGS->SetLagCompensator(this);
 	}
 }
 
@@ -33,11 +34,7 @@ void ALagCompensator::SR_StartCompensation_Implementation(float TimeStamp)
 		for (const FSavedComponent_Shooter& Frame : Profile.ComponentsFrames)
 		{
 			if (Frame.TimeStamp >= TimeStamp)
-			{
-				ApplyFrame(Frame);
-			
-				return;
-			}
+				return ApplyFrame(Frame);
 		}
 	}
 }
@@ -93,7 +90,7 @@ void ALagCompensator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CurrentTimeStamp = GetWorld()->RealTimeSeconds;
+	CurrentTimeStamp = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
 
 	if (HasAuthority())
 	{
