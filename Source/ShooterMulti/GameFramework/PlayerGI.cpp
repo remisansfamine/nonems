@@ -3,11 +3,9 @@
 
 UPlayerGI::UPlayerGI(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
-	// force blue team on offline mode $$$ to remove when implementing online mode
-	UserInfo.TeamNum = 1;
 }
 
-FPlayerInfo UPlayerGI::GetUserInfo()
+FClientSetup UPlayerGI::GetUserInfo()
 {
 	return UserInfo;
 }
@@ -17,18 +15,22 @@ void UPlayerGI::LeaveToMainMenu()
 	Super::ReturnToMainMenu();
 }
 
-void UPlayerGI::SetUserInfo(int32 InTeamNum, const FString& InUserName)
+void UPlayerGI::SetUserInfo(const FClientSetup& NewSetup)
 {
-	UserInfo.TeamNum = InTeamNum;
-	UserInfo.UserName = InUserName;
+	UserInfo = NewSetup;
 }
 
 void UPlayerGI::SetUsername(const FString& InUserName)
 {
-	UserInfo.UserName = InUserName;
+	UserInfo.Name = InUserName;
 }
 
-void UPlayerGI::SetTeamNum(int32 InTeamNum)
+const FString& UPlayerGI::GetUsername()
 {
-	UserInfo.TeamNum = InTeamNum;
+	return UserInfo.Name;
+}
+
+void UPlayerGI::SetTeamNum(const ETeam& InTeamNum)
+{
+	UserInfo.Team = InTeamNum;
 }

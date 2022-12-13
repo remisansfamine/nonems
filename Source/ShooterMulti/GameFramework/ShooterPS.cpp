@@ -2,6 +2,7 @@
 #include "PlayerGI.h"
 #include "../Characters/ShooterCharacter.h"
 #include "DeathMatchGS.h"
+#include "UtilsFunctionsLibrary.h"
 
 void AShooterPS::BeginPlay()
 {
@@ -30,16 +31,29 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 void AShooterPS::OverrideWith(class APlayerState* PlayerState)
 {
 	Super::OverrideWith(PlayerState);
+	
 	if (PlayerState)
 	{
 		const AShooterPS* ShooterPlayerState = Cast<AShooterPS>(PlayerState);
-
 		if (ShooterPlayerState)
 		{
 			NbKill = ShooterPlayerState->NbKill;
 			NbDeath = ShooterPlayerState->NbDeath;
-			ClientSetup = ShooterPlayerState->ClientSetup;
 		}
+	}
+}
+
+void AShooterPS::Rep_ClientDatas()
+{
+	Super::Rep_ClientDatas();
+	
+	AShooterCharacter* Pawn = GetPawn<AShooterCharacter>();
+	if (Pawn && Pawn->IsLocallyControlled())
+	{
+		UPlayerGI* GameInstance = GetWorld()->GetGameInstance<UPlayerGI>();
+		GameInstance->SetUserInfo(ClientSetup);
+
+		Pawn->SetTeam(ClientSetup.Team);
 	}
 }
 

@@ -9,5 +9,5 @@ void AMainMenuPS::SetNameInstance()
 {
 	UPlayerGI* GameInstance = GetWorld()->GetGameInstance<UPlayerGI>();
 
-	GameInstance->UserName = ClientSetup.Name;
+	GameInstance->SetUsername(ClientSetup.Name);
 }

@@ -1,2 +1,2 @@
 #TIMEOUT /T 6
-start "" "C:\Program Files\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor.exe" "%CD%\ShooterMulti.uproject" MainMenu_Level -game -ResX=600 -ResY=500 -WinX=0 -WinY=20 -WINDOWED -log -nosteam
+start "" "C:\Program Files\Epic Games\UE_4.27\Engine\Binaries\Win64\UE4Editor.exe" "%CD%\ShooterMulti.uproject" MainMenu_Level -game -ResX=1920 -ResY=1080 -WinX=0 -WinY=20 -WINDOWED -log -nosteam

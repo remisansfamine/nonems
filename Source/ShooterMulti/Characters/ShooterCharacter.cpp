@@ -69,15 +69,9 @@ UPlayerCameraComponent* AShooterCharacter::GetCameraComponent()
 
 void AShooterCharacter::InitPlayer()
 {
-	const FPlayerInfo& PlayerInfo = static_cast<UPlayerGI*>(GetGameInstance())->GetUserInfo();
-
-	InitTeamColor(static_cast<ETeam>(PlayerInfo.TeamNum));
-}
-
-void AShooterCharacter::InitTeamColor(ETeam InTeam)
-{
-	SetTeam(InTeam);
-	OnTeamSwitch.Broadcast();
+	const FClientSetup& PlayerInfo = static_cast<UPlayerGI*>(GetGameInstance())->GetUserInfo();
+	
+	SetTeam(PlayerInfo.Team);
 }
 
 void AShooterCharacter::Invincibility(float Duration)

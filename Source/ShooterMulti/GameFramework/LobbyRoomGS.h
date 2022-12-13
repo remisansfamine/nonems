@@ -27,14 +27,14 @@ class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 	// All client characters spawned
 	UPROPERTY()
 	TArray<ACharacter*> CharactersSpawned;
-
-	// Local player controller
-	UPROPERTY()
-	APlayerController* SelfController;
 	
 	void SetupPlayerStart();
 	
 public:
+	// Local player controller
+	UPROPERTY()
+	APlayerController* SelfController;
+
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)

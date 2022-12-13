@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "ShooterMultiPS_Base.h"
-#include "ShooterMulti/Characters/LobbyRoomCharacter.h"
+#include "../Characters/LobbyRoomCharacter.h"
 #include "LobbyRoomPS.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerSetReady, bool, IsReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReplicatedData);
 
 /**
  * 
@@ -21,6 +24,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString& GetClientSetup();
+
+	UFUNCTION()
+	void SetPawn();
+	
+	UPROPERTY(BlueprintAssignable)
+	FServerSetReady OnServerSetReady;
+
+	UPROPERTY(BlueprintAssignable)
+	FReplicatedData OnReplicatedInfos;
 	
 	virtual void Rep_ClientDatas() override;
 };

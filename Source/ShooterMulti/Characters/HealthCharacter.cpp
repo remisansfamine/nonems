@@ -333,5 +333,7 @@ void AHealthCharacter::Reset()
 void AHealthCharacter::SetTeam(ETeam InTeam)
 {
 	Team = InTeam;
-	OnTeamSwitch.Broadcast();
+
+	if (OnTeamSwitch.IsBound())
+		OnTeamSwitch.Broadcast();
 }

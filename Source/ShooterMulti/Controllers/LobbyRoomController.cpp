@@ -3,6 +3,7 @@
 
 #include "LobbyRoomController.h"
 
+#include "UtilsFunctionsLibrary.h"
 #include "GameFrameWork/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShooterMulti/GameFramework/LobbyRoomGM.h"
@@ -25,6 +26,59 @@ void ALobbyRoomController::CL_SpawnAllCharacters_Implementation()
 		GS->SpawnSelfCharacter(this);
 }
 
+void ALobbyRoomController::SR_SetHost_Implementation(const bool IsHost)
+{
+	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
+
+	if (PS)
+		PS->ClientSetup.bIsHost = IsHost;
+}
+
+bool ALobbyRoomController::IsReady()
+{
+	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
+	
+	if (PS)
+		return PS->ClientSetup.bIsReady;
+
+	return false;
+}
+
+bool ALobbyRoomController::IsHost()
+{
+	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
+	
+	if (PS)
+		return PS->ClientSetup.bIsHost;
+
+	return false;
+}
+
+const FClientSetup ALobbyRoomController::GetClientSetup()
+{
+	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
+
+	if (PS)
+		return PS->ClientSetup;
+
+	return FClientSetup();
+}
+
+FClientSetup ALobbyRoomController::SetClientSetup(const FString& InName, const ETeam& InTeam)
+{
+	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
+	
+	if (PS)
+	{
+		PS->ClientSetup.Name = InName;
+		PS->ClientSetup.Team = InTeam;
+		
+		return PS->ClientSetup;
+	}
+
+	return FClientSetup();
+}
+
 bool ALobbyRoomController::SetReady()
 {
 	if (GetLocalRole() != ROLE_AutonomousProxy)
@@ -36,14 +90,23 @@ bool ALobbyRoomController::SetReady()
 		if (PS->ClientSetup.Team == ETeam::None)
 			return false;
 	
-	SR_SetReady();
+	SR_SetReady(true);
 	return true;
 }
 
-void ALobbyRoomController::SR_SetReady_Implementation()
+bool ALobbyRoomController::CancelReady()
+{
+	if (GetLocalRole() != ROLE_AutonomousProxy)
+		return false;
+
+	SR_SetReady(false);
+	return true;
+}
+
+void ALobbyRoomController::SR_SetReady_Implementation(const bool NewState)
 {
 	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
 
 	if (PS)
-		PS->ClientSetup.bIsReady = true;
+		PS->ClientSetup.bIsReady = NewState;
 }

@@ -96,9 +96,7 @@ void ALobbyRoomGS::UpdateCharacters()
 		ALobbyRoomPS* CurrentPlayerState = static_cast<ALobbyRoomPS*>(PlayerArray[i]);
 
 		CurrentPlayerState->Pawn = Character;
-		
-		// Setup the character
-		Character->ChangeHeadName(CurrentPlayerState->ClientSetup.Name);
+		CurrentPlayerState->SetPawn();
 		
 		// Add the character to the list
 		CharactersSpawned.Add(Character);

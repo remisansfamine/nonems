@@ -26,8 +26,11 @@ struct FClientSetup
 	UPROPERTY(BlueprintReadWrite)
 	ETeam Team = ETeam::None;
 	
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	bool bIsReady = false;
+
+	UPROPERTY()
+	bool bIsHost = false;
 };
 /**
  * 
@@ -46,9 +49,9 @@ protected:
 
 public:	
 	// Used to copy properties from the current PlayerState to the passed one
-	virtual void CopyProperties(class APlayerState* PlayerState);
+	virtual void CopyProperties(APlayerState* PlayerState) override;
 	// Used to override the current PlayerState with the properties of the passed one
-	virtual void OverrideWith(class APlayerState* PlayerState);
+	virtual void OverrideWith(APlayerState* PlayerState) override;
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SR_SetClientSetup(const FClientSetup& InSetup);

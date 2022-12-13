@@ -65,3 +65,8 @@ void ALobbyRoomCharacter::ChangeHeadName(const FString& Name)
 		HeadNameText->SetText(FText::FromString(Name));
 }
 
+void ALobbyRoomCharacter::ChangeNameColor(const FColor& InColor)
+{
+	if (HeadNameText)
+		HeadNameText->SetTextRenderColor(InColor);
+}

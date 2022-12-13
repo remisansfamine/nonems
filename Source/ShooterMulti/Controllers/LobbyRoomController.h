@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "ShooterMulti/GameFramework/ShooterMultiPS_Base.h"
 #include "LobbyRoomController.generated.h"
 
 /**
@@ -19,11 +20,30 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SR_GetAndVerifyPassword(const FString& password);
 
-	UFUNCTION(Server, Reliable)
-	void SR_SetReady();
+	// Getter and Setter of ClientSetup in Controller's Player State
+	UFUNCTION(BlueprintCallable)
+	const FClientSetup GetClientSetup();
 
 	UFUNCTION(BlueprintCallable)
+	FClientSetup SetClientSetup(const FString& InName, const ETeam& InTeam);
+	
+	UFUNCTION(Server, Reliable)
+	void SR_SetReady(const bool NewState);
+	
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void SR_SetHost(const bool IsHost);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsReady();
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsHost();
+	
+	UFUNCTION(BlueprintCallable)
 	bool SetReady();
+
+	UFUNCTION(BlueprintCallable)
+	bool CancelReady();
 	
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void CL_SpawnAllCharacters();

@@ -36,4 +36,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void ChangeHeadName(const FString& Name);
+
+	void ChangeNameColor(const FColor& InColor);
 };

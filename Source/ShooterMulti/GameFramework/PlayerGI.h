@@ -1,41 +1,34 @@
 #pragma once
 
+#include "ShooterMultiPS_Base.h"
 #include "Engine/GameInstance.h"
 #include "PlayerGI.generated.h"
 
-USTRUCT(BlueprintType)
-struct FPlayerInfo
-{
-	GENERATED_BODY()
-
-	int32 TeamNum;
-	FString UserName;
-};
 
 UCLASS()
 class SHOOTERMULTI_API UPlayerGI : public UGameInstance
 {
 	GENERATED_BODY()
 	
-	FPlayerInfo UserInfo;
+	FClientSetup UserInfo;
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	FString UserName;
-	
 	UPlayerGI(const FObjectInitializer& ObjInit);
 	
-	FPlayerInfo GetUserInfo();
+	FClientSetup GetUserInfo();
 
 	UFUNCTION(BlueprintCallable)
 	void LeaveToMainMenu();
 	
 	UFUNCTION(BlueprintCallable)
-	void SetUserInfo(int32 InTeamNum, const FString& InUserName);
+	void SetUserInfo(const FClientSetup& NewSetup);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetUsername(const FString& InUserName);
+
+	UFUNCTION(BlueprintCallable)
+	const FString& GetUsername();
 	
 	UFUNCTION(BlueprintCallable)
-	void SetTeamNum(int32 InTeamNum);
+	void SetTeamNum(const ETeam& InTeamNum);
 };
