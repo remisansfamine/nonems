@@ -53,7 +53,10 @@ void AUndeadDirector::SpawnEnemy(FVector pos, const FRotator& rot, ETeam Team)
 }
 void AUndeadDirector::SpawnTickEnemy()
 {
-	int rand = FMath::RandRange(0, SpawnPoints.Num() - 1);
+	if (SpawnPoints.Num() == 0)
+		return;
+	
+	const int rand = FMath::RandRange(0, SpawnPoints.Num() - 1);
 
 	SpawnEnemy(SpawnPoints[rand]->GetActorLocation(), SpawnPoints[rand]->GetActorRotation());
 }
