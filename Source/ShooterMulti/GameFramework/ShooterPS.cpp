@@ -22,6 +22,7 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 		{
 			ShooterPlayerState->NbKill = NbKill;
 			ShooterPlayerState->NbKill = NbDeath;
+			ShooterPlayerState->ClientSetup = ClientSetup;
 		}
 	}
 }
@@ -31,13 +32,13 @@ void AShooterPS::OverrideWith(class APlayerState* PlayerState)
 	Super::OverrideWith(PlayerState);
 	if (PlayerState)
 	{
-		AShooterPS* ShooterPlayerState = Cast<AShooterPS>(PlayerState);
+		const AShooterPS* ShooterPlayerState = Cast<AShooterPS>(PlayerState);
 
 		if (ShooterPlayerState)
 		{
 			NbKill = ShooterPlayerState->NbKill;
 			NbDeath = ShooterPlayerState->NbDeath;
-			UserName = ShooterPlayerState->UserName;
+			ClientSetup = ShooterPlayerState->ClientSetup;
 		}
 	}
 }

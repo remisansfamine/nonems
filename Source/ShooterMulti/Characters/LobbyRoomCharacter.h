@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HealthCharacter.h"
 #include "Components/TextRenderComponent.h"
 #include "../Weapons/WeaponComponent.h"
 #include "GameFramework/Character.h"

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayInEditorDataTypes.h"
 #include "GameFramework/PlayerState.h"
 #include "ShooterMultiPS_Base.generated.h"
 

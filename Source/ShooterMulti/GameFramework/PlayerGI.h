@@ -20,10 +20,16 @@ class SHOOTERMULTI_API UPlayerGI : public UGameInstance
 	FPlayerInfo UserInfo;
 
 public:
+	UPROPERTY(BlueprintReadOnly)
+	FString UserName;
+	
 	UPlayerGI(const FObjectInitializer& ObjInit);
 	
 	FPlayerInfo GetUserInfo();
 
+	UFUNCTION(BlueprintCallable)
+	void LeaveToMainMenu();
+	
 	UFUNCTION(BlueprintCallable)
 	void SetUserInfo(int32 InTeamNum, const FString& InUserName);
 	

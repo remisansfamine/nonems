@@ -9,11 +9,11 @@
 
 bool UUtilsFunctionsLibrary::IsEOSEnabled()
 {
-	IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
+	const IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
 
 	if (OSS)
 	{
-		FString Name = OSS->GetOnlineServiceName().ToString();
+		const FString Name = OSS->GetOnlineServiceName().ToString();
 		if (Name == FString("EOS"))
 			return true;
 	}
@@ -21,7 +21,7 @@ bool UUtilsFunctionsLibrary::IsEOSEnabled()
 	return false;
 }
 
-FString UUtilsFunctionsLibrary::StringCleanFromInput(const FString& EntryString, const FString& WrongCharacters, bool CaseSensitive)
+FString UUtilsFunctionsLibrary::StringCleanFromInput(const FString& EntryString, const FString& WrongCharacters, const bool CaseSensitive)
 {
 	FString OutString;
 
@@ -44,7 +44,7 @@ FString UUtilsFunctionsLibrary::StringCleanFromInput(const FString& EntryString,
 	return OutString;
 }
 
-FString UUtilsFunctionsLibrary::StringToAlnumString(const FString& EntryString, bool ShouldRemoveSpaces)
+FString UUtilsFunctionsLibrary::StringToAlnumString(const FString& EntryString, const bool ShouldRemoveSpaces)
 {
 	FString OutString;
 	
@@ -57,44 +57,44 @@ FString UUtilsFunctionsLibrary::StringToAlnumString(const FString& EntryString, 
 	return OutString;
 }
 
-bool UUtilsFunctionsLibrary::IsAlpha(const FString& str)
+bool UUtilsFunctionsLibrary::IsAlpha(const FString& Str)
 {
 	// Should be a character
-	if (str.Len() != 1)
+	if (Str.Len() != 1)
 		return false;
 
-	return IsAlpha(str[0]);
+	return IsAlpha(Str[0]);
 }
 
-bool UUtilsFunctionsLibrary::IsDigit(const FString& str)
+bool UUtilsFunctionsLibrary::IsDigit(const FString& Str)
 {
 	// Should be a character
-	if (str.Len() != 1)
+	if (Str.Len() != 1)
 		return false;
 
-	return IsDigit(str[0]);
+	return IsDigit(Str[0]);
 }
 
-bool UUtilsFunctionsLibrary::IsAlnum(const FString& str)
+bool UUtilsFunctionsLibrary::IsAlnum(const FString& Str)
 {
 	// Should be a character
-	if (str.Len() != 1)
+	if (Str.Len() != 1)
 		return false;
 
-	return IsAlnum(str[0]);
+	return IsAlnum(Str[0]);
 }
 
-bool UUtilsFunctionsLibrary::IsAlpha(const char c)
+bool UUtilsFunctionsLibrary::IsAlpha(const char C)
 {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+	return (C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z');
 }
 
-bool UUtilsFunctionsLibrary::IsDigit(const char c)
+bool UUtilsFunctionsLibrary::IsDigit(const char C)
 {
-	return (c >= '0' && c <= '9');
+	return (C >= '0' && C <= '9');
 }
 
-bool UUtilsFunctionsLibrary::IsAlnum(const char c)
+bool UUtilsFunctionsLibrary::IsAlnum(const char C)
 {
-	return IsDigit(c) || IsAlpha(c);
+	return IsDigit(C) || IsAlpha(C);
 }

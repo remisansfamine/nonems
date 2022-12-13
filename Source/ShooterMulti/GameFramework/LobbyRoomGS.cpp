@@ -3,10 +3,10 @@
 
 #include "LobbyRoomGS.h"
 
+#include "LobbyRoomPS.h"
 #include "GameFramework/PlayerStart.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
-#include "Net/UnrealNetwork.h"
 #include "ShooterMulti/Characters/LobbyRoomCharacter.h"
 
 void ALobbyRoomGS::SetupPlayerStart()
@@ -41,7 +41,7 @@ void ALobbyRoomGS::BeginPlay()
 	SetupPlayerStart();
 }
 
-ALobbyRoomCharacter* ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
+void ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
 {
 	// Get the self PlayerStart transform
 	const FTransform CharacterTransform = SelfPlayerStart->GetTransform();
@@ -52,13 +52,17 @@ ALobbyRoomCharacter* ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalCo
 	// Get the associated character
 	ALobbyRoomCharacter* Character = Cast<ALobbyRoomCharacter>(SpawnedActor);
 
+	ALobbyRoomPS* PlayerState = LocalController->GetPlayerState<ALobbyRoomPS>();
+
 	// Setup the character
-	Character->PossessedBy(LocalController);
-	Character->ChangeHeadName("Michel");
+	PlayerState->Pawn = Character;
 
+	const FString& Name = PlayerState->GetClientSetup();
+	
+	Character->PossessedBy(LocalController);	
+	Character->ChangeHeadName(Name);
+	
 	SelfController = LocalController;
-
-	return Character;
 }
 
 void ALobbyRoomGS::UpdateCharacters()
@@ -89,9 +93,13 @@ void ALobbyRoomGS::UpdateCharacters()
 		// Get the associated character
 		ALobbyRoomCharacter* Character = Cast<ALobbyRoomCharacter>(SpawnedActor);
 
-		// Setup the character
-		Character->ChangeHeadName("Patrick");
+		ALobbyRoomPS* CurrentPlayerState = static_cast<ALobbyRoomPS*>(PlayerArray[i]);
 
+		CurrentPlayerState->Pawn = Character;
+		
+		// Setup the character
+		Character->ChangeHeadName(CurrentPlayerState->ClientSetup.Name);
+		
 		// Add the character to the list
 		CharactersSpawned.Add(Character);
 	}

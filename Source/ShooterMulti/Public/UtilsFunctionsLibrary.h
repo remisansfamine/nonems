@@ -8,6 +8,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UtilsFunctionsLibrary.generated.h"
 
+#define PRINT(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5, FColor::White,text)
+
 /**
  * 
  */
@@ -22,23 +24,23 @@ public:
 
 	// Take a string and remove all the characters given in the WrongCharacters string
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static FString StringCleanFromInput(const FString& EntryString, const FString& WrongCharacters, bool CaseSensitive);
+	static FString StringCleanFromInput(const FString& EntryString, const FString& WrongCharacters, const bool CaseSensitive);
 
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static FString StringToAlnumString(const FString& EntryString, bool ShouldRemoveSpaces);
+	static FString StringToAlnumString(const FString& EntryString, const bool ShouldRemoveSpaces);
 
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static bool IsAlpha(const FString& str);
+	static bool IsAlpha(const FString& Str);
 
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static bool IsDigit(const FString& str);
+	static bool IsDigit(const FString& Str);
 
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static bool IsAlnum(const FString& str);
+	static bool IsAlnum(const FString& Str);
 
-	static bool IsAlpha(const char c);
-	static bool IsDigit(const char c);
-	static bool IsAlnum(const char c);
+	static bool IsAlpha(const char C);
+	static bool IsDigit(const char C);
+	static bool IsAlnum(const char C);
 
 	template<typename InStructType>
 	static bool SaveDataStructureToIniFile(const InStructType& InStruct, const FString& FilePath, const FString& FileName);

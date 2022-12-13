@@ -12,6 +12,11 @@ FPlayerInfo UPlayerGI::GetUserInfo()
 	return UserInfo;
 }
 
+void UPlayerGI::LeaveToMainMenu()
+{
+	Super::ReturnToMainMenu();
+}
+
 void UPlayerGI::SetUserInfo(int32 InTeamNum, const FString& InUserName)
 {
 	UserInfo.TeamNum = InTeamNum;

@@ -17,8 +17,14 @@ class SHOOTERMULTI_API ALobbyRoomController : public APlayerController
 public:
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void Sr_GetAndVerifyPassword(const FString& password);
+	void SR_GetAndVerifyPassword(const FString& password);
 
+	UFUNCTION(Server, Reliable)
+	void SR_SetReady();
+
+	UFUNCTION(BlueprintCallable)
+	bool SetReady();
+	
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void CL_SpawnAllCharacters();
 };

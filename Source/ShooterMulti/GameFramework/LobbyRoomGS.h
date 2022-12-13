@@ -38,7 +38,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	ALobbyRoomCharacter* SpawnSelfCharacter(APlayerController* LocalController);
+	void SpawnSelfCharacter(APlayerController* LocalController);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCharacters();
