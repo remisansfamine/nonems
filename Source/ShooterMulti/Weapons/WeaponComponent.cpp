@@ -263,17 +263,17 @@ void UWeaponComponent::SpawnEmitterAtLocation(	UParticleSystem* EmitterTemplate,
 												const FVector& Source,
 												const FVector& Target)
 {
-	if (EmitterTemplate)
+	if (!EmitterTemplate || IsRunningDedicatedServer())
+		return;
+	
+	UParticleSystemComponent* ParticleSystemComponent = UGameplayStatics::SpawnEmitterAtLocation(	GetWorld(),
+																				EmitterTemplate,
+																				SpawnTransform,
+																				true,
+																				EPSCPoolMethod::AutoRelease);
+	if (Source != FVector::ZeroVector && Target != FVector::ZeroVector)
 	{
-		UParticleSystemComponent* ParticleSystemComponent = UGameplayStatics::SpawnEmitterAtLocation(	GetWorld(),
-																					EmitterTemplate,
-																					SpawnTransform,
-																					true,
-																					EPSCPoolMethod::AutoRelease);
-		if (Source != FVector::ZeroVector && Target != FVector::ZeroVector)
-		{
-			ParticleSystemComponent->SetBeamSourcePoint(0, Source, 0);
-			ParticleSystemComponent->SetBeamTargetPoint(0, Target, 0);
-		}
+		ParticleSystemComponent->SetBeamSourcePoint(0, Source, 0);
+		ParticleSystemComponent->SetBeamTargetPoint(0, Target, 0);
 	}
 }
