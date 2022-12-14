@@ -15,6 +15,10 @@ void UWeaponComponent::BeginPlay()
 
 	LightPool.BeginPlay(GetWorld(), 4u);
 
+	// Replicate values, should only be set from server
+	if (!GetOwner()->HasAuthority())
+		return;
+
 	AmmoCount = MaxAmmo;
 	CurrentSpread = 0.f;
 	if (AmmoCount > WeaponMagazineSize)
