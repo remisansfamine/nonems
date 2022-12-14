@@ -13,7 +13,6 @@ class SHOOTERMULTI_API APickupDirector : public AActor, public IResetable
 	
 private:
 
-	UPROPERTY(VisibleAnywhere)
 	TArray<bool> IsSpawnFullArray;
 	int CurrentPickupIndex = 0;
 
@@ -30,13 +29,12 @@ public:
 
 	APickupDirector();
 
-	UPROPERTY(VisibleAnywhere)
 	bool bIsFull = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Director, meta = (ClampMin = 0.1f))
 	float SecondPerSpawn = 15.0f;
 
-	UPROPERTY(EditInstanceOnly, BlueprintInternalUseOnly, Category = Director)
+	UPROPERTY()
 	TArray<AActor*> SpawnPoints;
 
 	UPROPERTY(EditInstanceOnly, BlueprintInternalUseOnly, Category = Director)

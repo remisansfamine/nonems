@@ -38,13 +38,26 @@ void APickup::NotifyActorBeginOverlap(AActor * OtherActor)
 	if (!IsValid(Player))
 		return;
 
-	//play the shot sound
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
+	Multi_PlaySoundLocally();
 
 	if (IsValid(Director))
 		Director->FreePickup(SpawnKey);
 	
 	Destroy();
+}
+
+void APickup::Multi_PlaySoundLocally_Implementation()
+{
+	if (IsRunningDedicatedServer())
+		return;
+
+	PlaySoundLocally();
+}
+
+void APickup::PlaySoundLocally()
+{
+	//play the shot sound
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
 }
 
 void APickup::Reset()

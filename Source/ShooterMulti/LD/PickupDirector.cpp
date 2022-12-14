@@ -4,16 +4,14 @@
 
 APickupDirector::APickupDirector()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	// Only update if solo play or server
+	bNetLoadOnClient = false;
+	PrimaryActorTick.bCanEverTick = HasAuthority() ? true : false;
 }
 
 void APickupDirector::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//IsSpawnFullArray.SetNum(SpawnPoints.Num());
-
-	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APickupDirector::TrySpawnPickup, SecondPerSpawn, true);
 
 	//ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
 	//GameState->OnPlayerNum.AddLambda([this](ADeathMatchGS* GS) { UpdateFrequencies(GS); }); // ??
@@ -28,7 +26,7 @@ void APickupDirector::RegisterPickup(const UPickupComponent& PickupComponent)
 
 void APickupDirector::TrySpawnPickup()
 {
-	if (bIsFull)
+	if (PickupBPs.Num() == 0 || bIsFull)
 		return;
 	
 	const int MaxPoints = SpawnPoints.Num() - 1;

@@ -18,6 +18,10 @@ void UPickupComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Dont register if not authority (solo play or server)
+	if (!GetOwner()->HasAuthority())
+		return;
+
 	// ...
 	AActor* DirectorActor = UGameplayStatics::GetActorOfClass(GetWorld(), APickupDirector::StaticClass());
 	APickupDirector* Director = Cast<APickupDirector>(DirectorActor);

@@ -52,5 +52,10 @@ protected:
 
 	void NotifyActorBeginOverlap(AActor * OtherActor) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlaySoundLocally();
+	
+	void PlaySoundLocally();
+
 	void Reset() override;
 };
