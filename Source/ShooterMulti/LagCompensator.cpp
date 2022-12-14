@@ -76,7 +76,7 @@ void ALagCompensator::SaveFrame()
 void ALagCompensator::ApplyFrame(const FSavedComponent_Shooter& FrameToApply)
 {
 	for (auto& ComponentFrame : FrameToApply.ComponentsStates)
-		ComponentFrame.Component->SetWorldTransform(ComponentFrame.Transform);
+		ComponentFrame.Component->SetWorldTransform(ComponentFrame.Transform, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 void ALagCompensator::SR_FinishCompensation_Implementation()
