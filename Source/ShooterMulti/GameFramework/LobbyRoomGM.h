@@ -18,6 +18,9 @@ struct FServerConfig
 	FString Password = "";
 
 	UPROPERTY(BlueprintReadWrite)
+	FString UUID = "";
+	
+	UPROPERTY(BlueprintReadWrite)
 	int MaxSlots = 5;
 };
 

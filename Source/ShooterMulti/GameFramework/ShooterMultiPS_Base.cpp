@@ -15,8 +15,6 @@ void AShooterMultiPS_Base::BeginPlay()
 void AShooterMultiPS_Base::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
-
-	UE_LOG(LogTemp, Warning, TEXT("Copy From Shooter Base"));
 	
 	if (PlayerState)
 	{
@@ -30,20 +28,13 @@ void AShooterMultiPS_Base::OverrideWith(APlayerState* PlayerState)
 {
 	Super::OverrideWith(PlayerState);
 
-	PRINT("TryingToOverride in base");
-	UE_LOG(LogTemp, Warning, TEXT("TryingToOverride in Base"))
-
 	if (PlayerState)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TryingToOverride in Base2"))
-
 		const AShooterMultiPS_Base* BasePlayerState = Cast<AShooterMultiPS_Base>(PlayerState);
 
 		if (BasePlayerState)
 		{
 			ClientSetup = BasePlayerState->ClientSetup;
-			PRINT("Override");
-			UE_LOG(LogTemp, Warning, TEXT("Override"))
 		}
 	}
 }

@@ -22,6 +22,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Utils")
     static bool IsEOSEnabled();
 
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static FString GetComputerName();
+
 	// Take a string and remove all the characters given in the WrongCharacters string
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static FString StringCleanFromInput(const FString& EntryString, const FString& WrongCharacters, const bool CaseSensitive);
@@ -48,6 +51,11 @@ public:
 	template<typename OutStructType>
 	static bool LoadDataStructureFromIniFile(OutStructType& OutStruct, const FString& FilePath, const FString& FileName);
 };
+
+inline FString UUtilsFunctionsLibrary::GetComputerName()
+{
+	return FString(FWindowsPlatformProcess::ComputerName());
+}
 
 template <typename InStructType>
 bool UUtilsFunctionsLibrary::SaveDataStructureToIniFile(const InStructType& InStruct, const FString& FilePath, const FString& FileName)

@@ -1,5 +1,4 @@
 #include "PlayerGI.h"
-#include "ShooterPS.h"
 
 UPlayerGI::UPlayerGI(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
