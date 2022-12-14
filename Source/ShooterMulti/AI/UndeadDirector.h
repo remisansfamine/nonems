@@ -24,9 +24,6 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintInternalUseOnly, Category = Director)
 	TArray<AActor*> SpawnPoints;
 
-	UPROPERTY(EditInstanceOnly, BlueprintInternalUseOnly, Category = Director)
-	TArray<AEnemySpawnerButton*> ButtonSpawnPoints;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Director)
 	int MaxPunchPerSecond = 2;
 

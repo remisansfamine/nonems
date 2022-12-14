@@ -3,7 +3,6 @@
 
 #include "PickupComponent.h"
 
-#include "Framework/Application/AnalogCursor.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShooterMulti/LD/PickupDirector.h"
 
@@ -11,7 +10,6 @@
 UPickupComponent::UPickupComponent()
 {
 }
-
 
 // Called when the game starts
 void UPickupComponent::BeginPlay()
