@@ -47,7 +47,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	CurrentSpread = FMath::Max(MinSpread, CurrentSpread - WeaponSpreadRecoveryRate * DeltaTime);
 }
 
-void UWeaponComponent::SR_Shoot(float TimeStamp)
+void UWeaponComponent::Shoot()
 {
 	FLaserWeaponData WeaponData;
 	WeaponData.MuzzleTransform = GetSocketTransform("MuzzleFlashSocket");
@@ -58,25 +58,23 @@ void UWeaponComponent::SR_Shoot(float TimeStamp)
 
 	FHitResult HitResult;
 	
-	if (ShootLaser(GetOwner(), HitResult, WeaponData, TimeStamp))
-		Multi_SetPointOfImpact(HitResult);
-
-	CL_PlayShotFX(HitResult.ImpactPoint, WeaponData);
+	if (ShootLaser(GetOwner(), HitResult, WeaponData))
+	{
+		if (GetOwner()->HasAuthority())
+			Multi_SetPointOfImpact(HitResult);
+	}
+	
+	GetOwner()->HasAuthority() ? Multi_PlayShotFX(HitResult.ImpactPoint, WeaponData) : PlayShotFX(HitResult.ImpactPoint, WeaponData);
 }
 
 void UWeaponComponent::SR_TryToShoot_Implementation(float TimeStamp)
 {
-	if (ShootTimer < FireRate)
-		return;
-	
-	ShootTimer = 0.f;
-
-	if (LoadedAmmo <= 0)
-		return;
-
-	--LoadedAmmo;
-
-	SR_Shoot(TimeStamp);
+	if (ALagCompensator* Compensator = GetWorld()->GetGameState<ADeathMatchGS>()->GetLagCompensator())
+	{
+		Compensator->SR_StartCompensation(TimeStamp);
+		TryToShoot();
+		Compensator->SR_FinishCompensation();
+	}
 }
 
 void UWeaponComponent::Multi_SetPointOfImpact_Implementation(const FHitResult& HitResult)
@@ -88,7 +86,7 @@ void UWeaponComponent::Multi_SetPointOfImpact_Implementation(const FHitResult& H
 	MakeImpactParticles(ImpactParticle, HitResult, .66f);
 }
 
-void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, const FLaserWeaponData& WeaponData)
+void UWeaponComponent::PlayShotFX(const FVector& ImpactPoint, const FLaserWeaponData& WeaponData)
 {
 	//make the beam visuals
 	MakeLaserBeam(WeaponData.MuzzleTransform.GetLocation(), ImpactPoint, BeamParticle, BeamIntensity, FLinearColor(1.f, 0.857892f, 0.036923f), BeamIntensityCurve);
@@ -100,9 +98,8 @@ void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, 
 	UGameplayStatics::SpawnEmitterAttached(MuzzleSmokeParticle, this, FName("MuzzleFlashSocket"));
 	
 	//apply shake
-	
-	auto PlayerController = Cast<AShooterController>(Cast<AShooterCharacter>(GetOwner())->GetController());
-	if (PlayerController && ShootShake)
+	AShooterController* PlayerController = Cast<AShooterController>(Cast<AShooterCharacter>(GetOwner())->GetController());
+	if (PlayerController && PlayerController->IsLocalPlayerController() && ShootShake)
 		PlayerController->ClientStartCameraShake(ShootShake);
 	
 	//add spread
@@ -113,10 +110,30 @@ void UWeaponComponent::CL_PlayShotFX_Implementation(const FVector& ImpactPoint, 
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShotEmptySound, GetOwner()->GetActorLocation());
 }
 
+
+void UWeaponComponent::Multi_PlayShotFX_Implementation(const FVector& ImpactPoint, const FLaserWeaponData& WeaponData)
+{
+	if (GetOwner()->GetLocalRole() != ROLE_AutonomousProxy)
+		PlayShotFX(ImpactPoint, WeaponData);
+}
+
 bool UWeaponComponent::TryToShoot()
 {
-	SR_TryToShoot(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
+	if (ShootTimer < FireRate)
+		return true;
+	
+	ShootTimer = 0.f;
 
+	if (LoadedAmmo <= 0)
+		return false;
+
+	--LoadedAmmo;
+
+	if (!GetOwner()->HasAuthority())
+		SR_TryToShoot(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
+
+	Shoot();
+	
 	return true;
 }
 
@@ -141,7 +158,7 @@ void UWeaponComponent::GetAmmo(int Count)
 
 // Weapon Utiliy
 
-bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData, float TimeStamp)
+bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const FLaserWeaponData& WeaponData)
 {
 	FVector LookLocation = WeaponData.LookTransform.GetLocation();
 	FVector LookDirection = WeaponData.LookTransform.GetRotation().GetForwardVector();
@@ -156,16 +173,7 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnPhysicalMaterial = true;
 
-	ALagCompensator* Compensator = GetWorld()->GetGameState<ADeathMatchGS>()->GetLagCompensator();
-
-	if (!Compensator)
-		return false;
-
-	Compensator->SR_StartCompensation(TimeStamp);
-
 	bool DidHit = GetWorld()->LineTraceSingleByChannel(	HitResult, LookLocation, LookLocation + LookDirection * WeaponData.MaxDistance, ECC_Visibility , CollisionParams);
-
-	Compensator->SR_FinishCompensation();
 	
 	//in case of actor hit
 	if (!DidHit)
