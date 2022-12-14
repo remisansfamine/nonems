@@ -1,11 +1,10 @@
 #pragma once
 
 #include "DeathMatchGM.h"
+#include "ShooterMultiPS_Base.h"
 #include "GameFramework/GameStateBase.h"
 #include "ShooterMulti/LagCompensator.h"
 #include "DeathMatchGS.generated.h"
-
-class AHealthCharacter;
 
 UCLASS()
 class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase

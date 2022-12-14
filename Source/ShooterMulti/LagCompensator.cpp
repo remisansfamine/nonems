@@ -82,7 +82,10 @@ void ALagCompensator::ApplyFrame(const FSavedComponent_Shooter& FrameToApply)
 void ALagCompensator::SR_FinishCompensation_Implementation()
 {
 	for (const LabelProfile& Profile : SubscribedLabels)
-		ApplyFrame(Profile.ComponentsFrames.Last());
+	{
+		if (Profile.ComponentsFrames.Num() > 0)
+			ApplyFrame(Profile.ComponentsFrames.Last());
+	}
 }
 
 // Called every frame
