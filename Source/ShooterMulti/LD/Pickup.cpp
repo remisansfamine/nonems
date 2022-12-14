@@ -25,7 +25,7 @@ void APickup::Tick(float DeltaTime)
 	SetActorLocation(BasePos + FVector::UpVector * Offset);
 
 	FRotator NewRot = GetActorRotation();
-	NewRot.Yaw += 42 * sin(DeltaTime);
+	NewRot.Yaw += 100 * DeltaTime;
 	SetActorRotation(NewRot);
 }
 

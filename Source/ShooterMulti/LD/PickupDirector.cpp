@@ -4,32 +4,40 @@
 
 APickupDirector::APickupDirector()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void APickupDirector::BeginPlay()
 {
 	Super::BeginPlay();
 
-	IsSpawnFullArray.SetNum(SpawnPoints.Num());
-	
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APickupDirector::SpawnTick, SecondPerSpawn, true);
+	//IsSpawnFullArray.SetNum(SpawnPoints.Num());
+
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APickupDirector::TrySpawnPickup, SecondPerSpawn, true);
 
 	//ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
 	//GameState->OnPlayerNum.AddLambda([this](ADeathMatchGS* GS) { UpdateFrequencies(GS); }); // ??
 }
 
-void APickupDirector::SpawnTick()
+void APickupDirector::RegisterPickup(const UPickupComponent& PickupComponent)
+{
+	IsSpawnFullArray.Add(false);
+	SpawnPoints.Add(PickupComponent.GetOwner());
+	bIsFull = false;
+}
+
+void APickupDirector::TrySpawnPickup()
 {
 	if (bIsFull)
 		return;
 	
-	int MaxPoints = SpawnPoints.Num() - 1;
-	int RandomPoint = FMath::RandRange(0, MaxPoints);
-	int PrevPoint = RandomPoint;
+	const int MaxPoints = SpawnPoints.Num() - 1;
+	int	RandomPoint = FMath::RandRange(0, MaxPoints);
+	const int PrevPoint = RandomPoint;
 
 	while (IsSpawnFullArray[RandomPoint])
 	{
-		RandomPoint = (RandomPoint + 1) % MaxPoints;
+		RandomPoint = (RandomPoint + 1) % SpawnPoints.Num();
 		if (RandomPoint == PrevPoint)
 		{
 			bIsFull = true;
@@ -37,30 +45,33 @@ void APickupDirector::SpawnTick()
 		}
 	}
 
-	IsSpawnFullArray[RandomPoint] = true;
-	SpawnPickup(CurrentPickupIndex, RandomPoint);
 	CurrentPickupIndex = (CurrentPickupIndex + 1) % PickupBPs.Num();
+	if (SpawnPickup(CurrentPickupIndex, RandomPoint))
+		IsSpawnFullArray[RandomPoint] = true;
 }
 
-void APickupDirector::SpawnPickup(int pickupIndex, int spawnPointIndex)
+bool APickupDirector::SpawnPickup(int pickupIndex, int spawnPointIndex)
 {
-	auto pickupBP = PickupBPs[pickupIndex];
-	auto pickupLocation = SpawnPoints[spawnPointIndex]->GetActorLocation();
-	auto pickupRotation = SpawnPoints[spawnPointIndex]->GetActorRotation();
+	const auto pickupBP = PickupBPs[pickupIndex];
+	const auto pickupLocation = SpawnPoints[spawnPointIndex]->GetActorLocation();
+	const auto pickupRotation = SpawnPoints[spawnPointIndex]->GetActorRotation();
 
-	auto Pickup = GetWorld()->SpawnActor<APickup>(pickupBP, pickupLocation, pickupRotation);
+	const auto Pickup = GetWorld()->SpawnActor<APickup>(pickupBP, pickupLocation, pickupRotation);
 
-	if (Pickup)
-	{
-		Pickup->SpawnKey.ClassKey = pickupIndex;
-		Pickup->SpawnKey.SpawnPointKey = spawnPointIndex;
-		Pickup->Director = this;
-	}
+	if (!Pickup)
+		return false;
+	
+	Pickup->SpawnKey.ClassKey = pickupIndex;
+	Pickup->SpawnKey.SpawnPointKey = spawnPointIndex;
+	Pickup->Director = this;
+
+	return true;
 }
 
 void APickupDirector::FreePickup(FSpawnKey Key)
 {
 	IsSpawnFullArray[Key.SpawnPointKey] = false;
+	bIsFull = false;
 }
 
 void APickupDirector::SetFull(bool isFull)
@@ -74,4 +85,17 @@ void APickupDirector::Reset()
 
 	for (int i = 0; i < IsSpawnFullArray.Num(); i++)
 		IsSpawnFullArray[i] = false;
+}
+
+void APickupDirector::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	timer += DeltaSeconds;
+
+	if (timer >= SecondPerSpawn)
+	{
+		timer = 0.f;
+		TrySpawnPickup();
+	}
 }
