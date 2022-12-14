@@ -44,6 +44,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AShooterCharacter, bIsAiming);
 	DOREPLIFETIME(AShooterCharacter, bIsSprinting);
+	DOREPLIFETIME(AShooterCharacter, bIsReloading);
 }
 
 EShooterCharacterState AShooterCharacter::GetState() const
