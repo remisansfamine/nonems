@@ -164,6 +164,9 @@ public:
 
 	void Reload();
 
+	UFUNCTION(Server, Reliable)
+	void SR_Reload();
+
 	void GetAmmo(int Count);
 
 };

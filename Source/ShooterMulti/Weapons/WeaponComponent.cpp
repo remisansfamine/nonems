@@ -153,6 +153,14 @@ void UWeaponComponent::Reload()
 		LoadedAmmo = AmmoCount;
 		AmmoCount = 0;
 	}
+
+	if (!GetOwner()->HasAuthority())
+		SR_Reload_Implementation();
+}
+
+void UWeaponComponent::SR_Reload_Implementation()
+{
+	Reload();
 }
 
 void UWeaponComponent::GetAmmo(int Count)
