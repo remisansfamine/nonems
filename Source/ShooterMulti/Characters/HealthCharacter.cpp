@@ -8,7 +8,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine.h"
-#include "../Controllers/ShooterController.h"
 #include "Net/UnrealNetwork.h"
 
 // COMMENTARY SECOND
@@ -23,7 +22,7 @@ AHealthCharacter::AHealthCharacter(const FObjectInitializer& ObjectInitializer) 
 	PunchCollision->SetRelativeLocation(FVector(80.f, 0.f, 20.f));
 	PunchCollision->InitSphereRadius(25.f);
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshContainer(TEXT("SkeletalMesh'/Game/Resources/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
+	const ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshContainer(TEXT("SkeletalMesh'/Game/Resources/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (MeshContainer.Succeeded())
 		GetMesh()->SetSkeletalMesh(MeshContainer.Object);
 
@@ -40,7 +39,7 @@ void AHealthCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bIsDisapearing = false;
+	bIsDisappearing = false;
 	ResetHealth();
 
 	InitRagdoll();
@@ -53,12 +52,12 @@ void AHealthCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsDisapearing)
+	if (!bIsDisappearing)
 		return;
 
-	DisapearTimer += DeltaTime;
+	DisappearTimer += DeltaTime;
 
-	UpdateDisapear();
+	UpdateDisappear();
 }
 
 void AHealthCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -67,7 +66,7 @@ void AHealthCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AHealthCharacter, Health);
 }
 
-bool AHealthCharacter::IsDead()
+bool AHealthCharacter::IsDead() const
 {
 	return Health <= 0.0f;
 }
@@ -75,7 +74,7 @@ bool AHealthCharacter::IsDead()
 void AHealthCharacter::Multi_OnDeath_Implementation()
 {
 	ActivateRagdoll();
-	StartDisapear();
+	StartDisappear();
 }
 
 float AHealthCharacter::GetMaxHealth() const
@@ -99,7 +98,7 @@ void AHealthCharacter::UpdateSkinColor()
 	else if(Team == ETeam::AI)
 		GetMesh()->SetVectorParameterValueOnMaterials("TeamColor", FVector(0.24, 0.24, 0.24)); // Black
 	else
-		GetMesh()->SetVectorParameterValueOnMaterials("TeamColor", FVector((Team != ETeam::Blue), (Team != ETeam::Red && Team != ETeam::Blue), (Team != ETeam::Red)));
+		GetMesh()->SetVectorParameterValueOnMaterials("TeamColor", FVector((Team != ETeam::Blue), 0, (Team != ETeam::Red)));
 }
 
 float AHealthCharacter::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
@@ -300,34 +299,34 @@ void AHealthCharacter::ActivateRagdoll()
 	}
 }
 
-void AHealthCharacter::StartDisapear()
+void AHealthCharacter::StartDisappear()
 {
-	DisapearTimer = 0.f;
-	bIsDisapearing = true;
+	DisappearTimer = 0.f;
+	bIsDisappearing = true;
 }
 
-void AHealthCharacter::UpdateDisapear()
+void AHealthCharacter::UpdateDisappear()
 {
-	if (!bIsDisapearing || DisapearTimer < DisapearingDelay)
+	if (!bIsDisappearing || DisappearTimer < DisapearingDelay)
 		return;
 
-	GetMesh()->SetScalarParameterValueOnMaterials(FName(TEXT("DissolveAmmount")), (DisapearTimer - DisapearingDelay) / DisapearingDuration);
+	GetMesh()->SetScalarParameterValueOnMaterials(FName(TEXT("DissolveAmmount")), (DisappearTimer - DisapearingDelay) / DisapearingDuration);
 
-	if (DisapearTimer > DisapearingDelay + DisapearingDuration)
+	if (DisappearTimer > DisapearingDelay + DisapearingDuration)
 	{
-		bIsDisapearing = false;
-		return FinishDisapear();
+		bIsDisappearing = false;
+		return FinishDisappear();
 	}
 }
 
-void AHealthCharacter::FinishDisapear()
+void AHealthCharacter::FinishDisappear()
 {
 	Destroy();
 }
 
 void AHealthCharacter::Reset()
 {
-	StartDisapear();
+	StartDisappear();
 }
 
 void AHealthCharacter::SetTeam(ETeam InTeam)

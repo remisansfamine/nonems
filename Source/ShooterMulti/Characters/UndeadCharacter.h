@@ -41,7 +41,7 @@ public:
 
 	AUndeadCharacter();
 
-	void StartDisapear() override;
+	void StartDisappear() override;
 	void Reset() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Undead")

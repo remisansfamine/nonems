@@ -16,6 +16,8 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
 
+	UE_LOG(LogTemp, Warning, TEXT("Copy from ShooterPS"));
+	
 	if (PlayerState)
 	{
 		AShooterPS* ShooterPlayerState = Cast<AShooterPS>(PlayerState);
@@ -24,6 +26,8 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 			ShooterPlayerState->NbKill = NbKill;
 			ShooterPlayerState->NbKill = NbDeath;
 			ShooterPlayerState->ClientSetup = ClientSetup;
+			
+			UE_LOG(LogTemp, Warning, TEXT("Copied"));
 		}
 	}
 }
@@ -46,7 +50,7 @@ void AShooterPS::OverrideWith(class APlayerState* PlayerState)
 void AShooterPS::Rep_ClientDatas()
 {
 	Super::Rep_ClientDatas();
-	
+
 	AShooterCharacter* Pawn = GetPawn<AShooterCharacter>();
 	if (Pawn && Pawn->IsLocallyControlled())
 	{

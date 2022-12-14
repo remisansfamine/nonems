@@ -135,8 +135,8 @@ public:
 	void RefreshTeamHUD(ETeam InTeam);
 	void RefreshTeamHUD_Implementation(ETeam InTeam) {};
 
-	void StartDisapear() override;
-	void FinishDisapear() override;
+	void StartDisappear() override;
+	void FinishDisappear() override;
 	
 	/** Handle Aiming replicated from server */
 	UFUNCTION() virtual void OnRep_IsAiming();

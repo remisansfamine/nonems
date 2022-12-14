@@ -15,8 +15,8 @@ protected:
 	UPROPERTY()
 	UCompensatorLabel* LabelComponent = nullptr;
 
-	float DisapearTimer;
-	bool bIsDisapearing;
+	float DisappearTimer;
+	bool bIsDisappearing;
 	TArray<UMaterialInstanceDynamic*> DissolveMaterials;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
@@ -63,7 +63,7 @@ public:
 	AHealthCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintPure, Category = "Character|Health")
-	bool IsDead();
+	bool IsDead() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_OnDeath();
@@ -102,7 +102,7 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void StartDisapear();
-	virtual void UpdateDisapear();
-	virtual void FinishDisapear();
+	virtual void StartDisappear();
+	virtual void UpdateDisappear();
+	virtual void FinishDisappear();
 };

@@ -70,9 +70,9 @@ UPlayerCameraComponent* AShooterCharacter::GetCameraComponent()
 
 void AShooterCharacter::InitPlayer()
 {
-	const FClientSetup& PlayerInfo = static_cast<UPlayerGI*>(GetGameInstance())->GetUserInfo();
+	AShooterPS* PS = GetPlayerState<AShooterPS>();
 	
-	SetTeam(PlayerInfo.Team);
+	SetTeam(PS->ClientSetup.Team);
 }
 
 void AShooterCharacter::Invincibility(float Duration)
@@ -271,9 +271,9 @@ void AShooterCharacter::PlayPunchAnim()
 	Cast<UShooterCharacterAnim>(GetMesh()->GetAnimInstance())->PlayPunchMontage();
 }
 
-void AShooterCharacter::StartDisapear()
+void AShooterCharacter::StartDisappear()
 {
-	Super::StartDisapear();
+	Super::StartDisappear();
 	
 	FTimerHandle Handle1;
 	GetWorld()->GetTimerManager().SetTimer(Handle1, [this]() { Weapon->SetVisibility(false, true); }, 3.5f, false);
@@ -288,11 +288,11 @@ void AShooterCharacter::StartDisapear()
 	}
 }
 
-void AShooterCharacter::FinishDisapear()
+void AShooterCharacter::FinishDisappear()
 {
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);
 
-	Super::FinishDisapear();
+	Super::FinishDisappear();
 
 	if (ADeathMatchGM* GM = Cast<ADeathMatchGM>(GetWorld()->GetAuthGameMode()))
 		GM->Respawn(PlayerController);

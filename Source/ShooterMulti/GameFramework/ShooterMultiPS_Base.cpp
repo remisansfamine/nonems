@@ -3,6 +3,7 @@
 
 #include "ShooterMultiPS_Base.h"
 
+#include "ShooterPS.h"
 #include "UtilsFunctionsLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,13 +16,13 @@ void AShooterMultiPS_Base::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
 
+	UE_LOG(LogTemp, Warning, TEXT("Copy From Shooter Base"));
+	
 	if (PlayerState)
 	{
 		AShooterMultiPS_Base* BasePlayerState = Cast<AShooterMultiPS_Base>(PlayerState);
 		if (BasePlayerState)
-		{
 			BasePlayerState->ClientSetup = ClientSetup;
-		}
 	}
 }
 

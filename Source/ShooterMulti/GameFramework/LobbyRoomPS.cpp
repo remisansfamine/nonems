@@ -41,7 +41,4 @@ void ALobbyRoomPS::Rep_ClientDatas()
 
 	if (OnServerSetReady.IsBound())
 		OnServerSetReady.Broadcast(ClientSetup.bIsReady);
-
-	if (OnReplicatedInfos.IsBound())
-		OnReplicatedInfos.Broadcast();
 }

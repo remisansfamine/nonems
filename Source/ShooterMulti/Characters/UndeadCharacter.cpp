@@ -112,9 +112,9 @@ void AUndeadCharacter::PlayPunchMontage()
 	}
 }
 
-void AUndeadCharacter::StartDisapear()
+void AUndeadCharacter::StartDisappear()
 {
-	Super::StartDisapear();
+	Super::StartDisappear();
 
 	ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
 	GameState->RemoveAI();
