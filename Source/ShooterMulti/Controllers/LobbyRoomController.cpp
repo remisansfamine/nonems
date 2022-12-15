@@ -34,6 +34,12 @@ void ALobbyRoomController::SR_SetHost_Implementation(const bool IsHost)
 		PS->ClientSetup.bIsHost = IsHost;
 }
 
+void ALobbyRoomController::SR_SendMaxScore_Implementation(const int Score)
+{
+	ALobbyRoomGM* GameMode = GetWorld()->GetAuthGameMode<ALobbyRoomGM>();
+	GameMode->SetMaxScore(Score);
+}
+
 bool ALobbyRoomController::IsReady()
 {
 	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();

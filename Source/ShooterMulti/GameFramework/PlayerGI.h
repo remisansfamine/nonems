@@ -12,6 +12,9 @@ class SHOOTERMULTI_API UPlayerGI : public UGameInstance
 	
 	FClientSetup UserInfo;
 
+	UPROPERTY()
+	int MaxGameScore = 50; //Only on server
+	
 public:
 	UPlayerGI(const FObjectInitializer& ObjInit);
 	
@@ -29,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const FString& GetUsername();
 	
+	UFUNCTION()
+	void SetMaxScore(const int Score);
+
 	UFUNCTION(BlueprintCallable)
-	void SetTeamNum(const ETeam& InTeamNum);
+	int GetMaxScore() const;
 };

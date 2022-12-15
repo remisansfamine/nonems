@@ -29,7 +29,12 @@ const FString& UPlayerGI::GetUsername()
 	return UserInfo.Name;
 }
 
-void UPlayerGI::SetTeamNum(const ETeam& InTeamNum)
+void UPlayerGI::SetMaxScore(const int Score)
 {
-	UserInfo.Team = InTeamNum;
+	MaxGameScore = Score;
+}
+
+int UPlayerGI::GetMaxScore() const
+{
+	return MaxGameScore;
 }

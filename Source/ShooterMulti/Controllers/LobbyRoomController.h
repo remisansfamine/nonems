@@ -33,6 +33,9 @@ public:
 	UFUNCTION(Server, Unreliable, BlueprintCallable)
 	void SR_SetHost(const bool IsHost);
 
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void SR_SendMaxScore(const int Score);
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsReady();
 	

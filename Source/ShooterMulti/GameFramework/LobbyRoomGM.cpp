@@ -2,11 +2,9 @@
 
 #include "LobbyRoomGM.h"
 
-#include "HAL/PlatformFilemanager.h"
-#include "Serialization/JsonSerializer.h"
+#include "PlayerGI.h"
 #include "UtilsFunctionsLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "JsonUtilities/Public/JsonObjectConverter.h"
 
 AActor* ALobbyRoomGM::ChoosePlayerStart_Implementation(AController* Player)
 {
@@ -34,5 +32,13 @@ AActor* ALobbyRoomGM::ChoosePlayerStart_Implementation(AController* Player)
 bool ALobbyRoomGM::ParseServerConfig(FServerConfig& config)
 {
 	return UUtilsFunctionsLibrary::LoadDataStructureFromIniFile(config, FPaths::ProjectDir(), "config");
+}
+
+void ALobbyRoomGM::SetMaxScoreInInstance(const int Score)
+{
+	UPlayerGI* GameInstance = GetGameInstance<UPlayerGI>();
+
+	if (GameInstance)
+		GameInstance->SetMaxScore(Score);
 }
 

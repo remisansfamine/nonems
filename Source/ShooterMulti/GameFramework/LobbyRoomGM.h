@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "ShooterMulti/Controllers/LobbyRoomController.h"
 #include "LobbyRoomGM.generated.h"
 
 USTRUCT(BlueprintType)
@@ -24,7 +25,6 @@ struct FServerConfig
 	int MaxSlots = 5;
 };
 
-
 /**
  * 
  */
@@ -40,5 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ParseServerConfig(FServerConfig& config);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetMaxScore(const int Score);
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxScoreInInstance(const int Score);
+	
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 };
