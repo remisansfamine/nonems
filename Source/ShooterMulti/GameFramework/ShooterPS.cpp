@@ -3,6 +3,7 @@
 #include "../Characters/ShooterCharacter.h"
 #include "DeathMatchGS.h"
 #include "UtilsFunctionsLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 void AShooterPS::BeginPlay()
 {
@@ -10,6 +11,14 @@ void AShooterPS::BeginPlay()
 
 	ADeathMatchGS* GameState = GetWorld()->GetGameState<ADeathMatchGS>();
 	GameState->OnResetAfterDelay.AddLambda([this]() { Reset(); });
+}
+
+void AShooterPS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AShooterPS, NbDeath);
+	DOREPLIFETIME(AShooterPS, NbKill);
 }
 
 void AShooterPS::CopyProperties(class APlayerState* PlayerState)

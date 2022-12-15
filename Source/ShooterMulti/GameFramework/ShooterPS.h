@@ -13,11 +13,13 @@ class SHOOTERMULTI_API AShooterPS : public AShooterMultiPS_Base
 protected:
 	void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
-	UPROPERTY(BlueprintReadOnly)
-	int NbKill;
-	UPROPERTY(BlueprintReadOnly)
-	int NbDeath;
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int NbKill = 0;
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	int NbDeath = 0;
 
 	// Used to copy properties from the current PlayerState to the passed one
 	virtual void CopyProperties(class APlayerState* PlayerState) override;

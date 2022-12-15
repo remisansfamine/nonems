@@ -49,8 +49,8 @@ public:
 	void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void IncreaseScore(ETeam Team);
-	void DecreaseScore(ETeam Team);
+	void SetScore(ETeam Team, int32 NewScore);
+	int32 GetScore(ETeam Team) const;
 	void AddPlayerState(APlayerState* PlayerState) override;
 	void RemovePlayerState(APlayerState* PlayerState) override;
 

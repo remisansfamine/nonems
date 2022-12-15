@@ -51,7 +51,7 @@ void ADeathMatchGS::AdvanceTimer()
 	}
 }
 
-void ADeathMatchGS::IncreaseScore(ETeam Team)
+void ADeathMatchGS::SetScore(ETeam Team, int32 NewScore)
 {
 	if (!GameMode)
 		return;
@@ -59,13 +59,16 @@ void ADeathMatchGS::IncreaseScore(ETeam Team)
 	switch (Team)
 	{
 	case ETeam::Red:
-		if (++RedTeamScore == GameInstance->GetMaxScore())
+		RedTeamScore += NewScore;
+		
+		if (RedTeamScore >= GameMode->MaxKill)
 			UpdateEndHud(Team);
 
 		break;
 
 	case ETeam::Blue:
-		if (++BlueTeamScore == GameInstance->GetMaxScore())
+		BlueTeamScore += NewScore;
+		if (BlueTeamScore >= GameMode->MaxKill)
 			UpdateEndHud(Team);
 		
 		break;
@@ -74,23 +77,18 @@ void ADeathMatchGS::IncreaseScore(ETeam Team)
 		break;
 	}
 }
-void ADeathMatchGS::DecreaseScore(ETeam Team)
+int32 ADeathMatchGS::GetScore(ETeam Team) const
 {
-	if (!GameMode)
-		return;
-
 	switch (Team)
 	{
 	case ETeam::Red:
-		--RedTeamScore;
-		break;
+		return RedTeamScore;
 
 	case ETeam::Blue:
-		--BlueTeamScore;
-		break;
+		return BlueTeamScore;
 
 	default:
-		break;
+		return 0;
 	}
 }
 

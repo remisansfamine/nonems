@@ -140,19 +140,8 @@ float AHealthCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Dama
 	
 	if (IsDead())
 	{
-		// Update Score on GameState
-		if (GetTeam() == ETeam::Blue || GetTeam() == ETeam::Red)
-		{
-			ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
-
-			const ETeam DamagingTeam = DamagingCharacter->GetTeam();
-			
-			// Check if team kill another team
-			if (GetTeam() == DamagingTeam)
-				GameState->DecreaseScore(DamagingTeam);
-			else
-				GameState->IncreaseScore(DamagingTeam);
-		}
+		if (ADeathMatchGM* GameMode = GetWorld()->GetAuthGameMode<ADeathMatchGM>())
+			GameMode->UpdateScoreOnDeath(this, DamagingCharacter);
 
 		Multi_OnDeath();
 	}
