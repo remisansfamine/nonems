@@ -379,6 +379,9 @@ void AShooterCharacter::OnStartReload()
 			return;
 
 		SetState(EShooterCharacterState::Reload);
+
+		if (Weapon)
+			Weapon->Reload();
 	}
 }
 
@@ -388,9 +391,6 @@ void AShooterCharacter::OnEndReload()
 		return;
 
 	SetState(EShooterCharacterState::IdleRun);
-
-	if(Weapon)
-		Weapon->Reload();
 }
 
 
