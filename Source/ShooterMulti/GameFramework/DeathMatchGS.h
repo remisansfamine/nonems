@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DeathMatchGM.h"
+#include "PlayerGI.h"
 #include "ShooterMultiPS_Base.h"
 #include "GameFramework/GameStateBase.h"
 #include "ShooterMulti/LagCompensator.h"
@@ -11,6 +12,8 @@ class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase
 {
 	GENERATED_BODY()
 
+	UPlayerGI* GameInstance;
+	
 protected:
 	UPROPERTY()
 	ALagCompensator* CompensatorInstance = nullptr;

@@ -15,8 +15,6 @@ void AShooterPS::BeginPlay()
 void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
-
-	UE_LOG(LogTemp, Warning, TEXT("Copy from ShooterPS"));
 	
 	if (PlayerState)
 	{
@@ -26,8 +24,6 @@ void AShooterPS::CopyProperties(class APlayerState* PlayerState)
 			ShooterPlayerState->NbKill = NbKill;
 			ShooterPlayerState->NbKill = NbDeath;
 			ShooterPlayerState->ClientSetup = ClientSetup;
-			
-			UE_LOG(LogTemp, Warning, TEXT("Copied"));
 		}
 	}
 }

@@ -43,8 +43,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetMaxScore(const int Score);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetMaxTime(const int Time);
+
+	
 	UFUNCTION(BlueprintCallable)
 	void SetMaxScoreInInstance(const int Score);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetMaxTimeInInstance(const int Time);
 	
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 };

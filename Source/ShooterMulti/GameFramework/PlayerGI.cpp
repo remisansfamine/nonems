@@ -38,3 +38,13 @@ int UPlayerGI::GetMaxScore() const
 {
 	return MaxGameScore;
 }
+
+void UPlayerGI::SetMaxTime(const int Time)
+{
+	MaxGameTime = Time;
+}
+
+int UPlayerGI::GetMaxTime() const
+{
+	return MaxGameTime;
+}

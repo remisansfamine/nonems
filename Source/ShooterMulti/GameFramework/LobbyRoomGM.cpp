@@ -42,3 +42,10 @@ void ALobbyRoomGM::SetMaxScoreInInstance(const int Score)
 		GameInstance->SetMaxScore(Score);
 }
 
+void ALobbyRoomGM::SetMaxTimeInInstance(const int Time)
+{
+	UPlayerGI* GameInstance = GetGameInstance<UPlayerGI>();
+
+	if (GameInstance)
+		GameInstance->SetMaxTime(Time);
+}

@@ -15,6 +15,9 @@ class SHOOTERMULTI_API UPlayerGI : public UGameInstance
 	UPROPERTY()
 	int MaxGameScore = 50; //Only on server
 	
+	UPROPERTY()
+	int MaxGameTime = 300; //Only on server
+	
 public:
 	UPlayerGI(const FObjectInitializer& ObjInit);
 	
@@ -37,4 +40,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetMaxScore() const;
+	
+	UFUNCTION()
+	void SetMaxTime(const int Time);
+
+	UFUNCTION(BlueprintCallable)
+	int GetMaxTime() const;
 };

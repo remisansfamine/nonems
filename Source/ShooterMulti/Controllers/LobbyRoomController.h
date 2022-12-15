@@ -32,9 +32,6 @@ public:
 	
 	UFUNCTION(Server, Unreliable, BlueprintCallable)
 	void SR_SetHost(const bool IsHost);
-
-	UFUNCTION(Server, Unreliable, BlueprintCallable)
-	void SR_SendMaxScore(const int Score);
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsReady();
@@ -47,6 +44,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool CancelReady();
+
+	
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void SR_SendMaxScore(const int Score);
+	
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void SR_SendMaxTime(const int Time);
 	
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void CL_SpawnAllCharacters();

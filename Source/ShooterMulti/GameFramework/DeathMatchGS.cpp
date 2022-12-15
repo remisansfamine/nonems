@@ -21,8 +21,9 @@ void ADeathMatchGS::BeginPlay()
 	GameMode = Cast<ADeathMatchGM>(AuthorityGameMode);
 	if (!GameMode)
 		return;
-	
-	CurrentTime = GameMode->GameTime;
+
+	GameInstance = GetGameInstance<UPlayerGI>();
+	CurrentTime = GameInstance->GetMaxTime();
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ADeathMatchGS::AdvanceTimer, 1.0f, true);
 }
 
@@ -58,13 +59,13 @@ void ADeathMatchGS::IncreaseScore(ETeam Team)
 	switch (Team)
 	{
 	case ETeam::Red:
-		if (++RedTeamScore == GameMode->MaxKill)
+		if (++RedTeamScore == GameInstance->GetMaxScore())
 			UpdateEndHud(Team);
 
 		break;
 
 	case ETeam::Blue:
-		if (++BlueTeamScore == GameMode->MaxKill)
+		if (++BlueTeamScore == GameInstance->GetMaxScore())
 			UpdateEndHud(Team);
 		
 		break;

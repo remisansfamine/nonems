@@ -19,6 +19,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 MaxAIPerPlayer = 10;
 
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void Respawn(APlayerController* PlayerController);
 

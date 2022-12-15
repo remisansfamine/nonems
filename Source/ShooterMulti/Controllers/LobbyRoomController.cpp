@@ -40,6 +40,12 @@ void ALobbyRoomController::SR_SendMaxScore_Implementation(const int Score)
 	GameMode->SetMaxScore(Score);
 }
 
+void ALobbyRoomController::SR_SendMaxTime_Implementation(const int Time)
+{
+	ALobbyRoomGM* GameMode = GetWorld()->GetAuthGameMode<ALobbyRoomGM>();
+	GameMode->SetMaxTime(Time);
+}
+
 bool ALobbyRoomController::IsReady()
 {
 	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
