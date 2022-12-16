@@ -39,6 +39,9 @@ class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 public:
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void Multi_OnSwitchTeam();
+
+	UFUNCTION(BlueprintCallable)
+	void OnSwitchTeam();
 	
 	// Local player controller
 	UPROPERTY()

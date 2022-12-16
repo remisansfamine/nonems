@@ -45,6 +45,11 @@ void ALobbyRoomGS::Multi_OnSwitchTeam_Implementation()
 	if (IsRunningDedicatedServer())
 		return;
 	
+	OnSwitchTeam();
+}
+
+void ALobbyRoomGS::OnSwitchTeam()
+{
 	UE_LOG(LogTemp, Warning, TEXT("SWITCH TEAM"))
 	bClientHasSwitchTeam = true;
 }
