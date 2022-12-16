@@ -49,6 +49,8 @@ public:
 	void AnimNotify_PunchHit(UAnimNotify* Notify) const;
 	UFUNCTION()
 	void AnimNotify_PushButton(UAnimNotify* Notify) const;
+	UFUNCTION()
+	void AnimNotify_WeaponReloaded(UAnimNotify* Notify) const;
 	UFUNCTION(BlueprintCallable)
 	void MontageEnded() const;
 

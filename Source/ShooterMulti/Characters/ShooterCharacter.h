@@ -97,9 +97,9 @@ public:
 	void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void StartSprint();
+	void StartWantsToSprint();
 	UFUNCTION()
-	void EndSprint();
+	void EndWantsToSprint();
 
 	UFUNCTION()
 	void StartJump();
@@ -107,9 +107,9 @@ public:
 	void EndJump();
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void StartAim();
+	void StartWantsToAim();
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void EndAim();
+	void EndWantsToAim();
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void StartShoot();
@@ -117,9 +117,9 @@ public:
 	void EndShoot();
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void StartReload();
+	void StartWantsToReload();
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void EndReload();
+	void EndWantsToReload();
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void AbortReload();
 
@@ -155,4 +155,6 @@ public:
     	
 	virtual void OnStartReload();
 	virtual void OnEndReload();
+
+	void ReloadWeapon();
 };

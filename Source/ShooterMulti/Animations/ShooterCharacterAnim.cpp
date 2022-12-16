@@ -58,14 +58,25 @@ void UShooterCharacterAnim::AnimNotify_PunchHit(UAnimNotify* Notify) const
 		ShooterCharacter->SR_InflictPunch(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 }
 
+void UShooterCharacterAnim::AnimNotify_WeaponReloaded(UAnimNotify* Notify) const
+{
+	if (ShooterCharacter)
+		ShooterCharacter->ReloadWeapon();
+}
+
 void UShooterCharacterAnim::AnimNotify_PushButton(UAnimNotify* Notify) const
 {
 	if (ShooterCharacter)
 		ShooterCharacter->SR_InflictPushButton();
 }
 
-
 void UShooterCharacterAnim::MontageEnded() const
 {
+	if (ShooterCharacter->IsLocallyControlled())
+	{
+		if (ShooterCharacter->bIsReloading)
+			ShooterCharacter->EndWantsToReload();
+	}
+		
 	ShooterCharacter->SetState(EShooterCharacterState::IdleRun);
 }

@@ -75,13 +75,13 @@ void AShooterController::Turn(float Value)
 void AShooterController::StartSprint()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->StartSprint();
+		ShooterCharacter->StartWantsToSprint();
 }
 
 void AShooterController::EndSprint()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->EndSprint();
+		ShooterCharacter->EndWantsToSprint();
 }
 
 void AShooterController::StartJump()
@@ -100,13 +100,13 @@ void AShooterController::EndJump()
 void AShooterController::StartAim()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->StartAim();
+		ShooterCharacter->StartWantsToAim();
 }
 
 void AShooterController::EndAim()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->EndAim();
+		ShooterCharacter->EndWantsToAim();
 }
 
 void AShooterController::StartShoot()
@@ -124,13 +124,13 @@ void AShooterController::EndShoot()
 void AShooterController::StartReload()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->StartReload();
+		ShooterCharacter->StartWantsToReload();
 }
 
 void AShooterController::EndReload()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->EndReload();
+		ShooterCharacter->EndWantsToReload();
 }
 
 void AShooterController::PushButton()
