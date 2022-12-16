@@ -42,9 +42,11 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AShooterCharacter, bIsShooting);
 	DOREPLIFETIME(AShooterCharacter, bIsAiming);
 	DOREPLIFETIME(AShooterCharacter, bIsSprinting);
-	DOREPLIFETIME(AShooterCharacter, bIsReloading);
+	DOREPLIFETIME(AShooterCharacter, AimPitch);
+	DOREPLIFETIME(AShooterCharacter, AimYaw);
 }
 
 EShooterCharacterState AShooterCharacter::GetState() const
@@ -210,7 +212,20 @@ void AShooterCharacter::Falling()
 	SetState(EShooterCharacterState::Falling);
 }
 
-void AShooterCharacter::PushButton()
+void AShooterCharacter::CL_PushButton()
+{
+	PlayPushButtonAnim();
+
+	SR_PushButton();
+}
+
+void AShooterCharacter::Multi_PushButton_Implementation()
+{
+	if (!IsLocallyControlled())
+		PlayPushButtonAnim();
+}
+
+void AShooterCharacter::SR_PushButton_Implementation()
 {
 	if (bIsShooting)
 		bIsShooting = false;
@@ -221,18 +236,22 @@ void AShooterCharacter::PushButton()
 		return;
 
 	SetState(EShooterCharacterState::PushButton);
-	PlayPushButtonAnim();
+	
+	Multi_PushButton();
 }
 
-void AShooterCharacter::SR_InflictPushButton_Implementation()
+void AShooterCharacter::SR_InflictPushButton()
 {
+	if (!HasAuthority())
+		return;
+	
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors, TSubclassOf<AEnemySpawnerButton>());
 
 	if (OverlappingActors.Num() > 0)
 	{
 		if (AEnemySpawnerButton* Button = Cast<AEnemySpawnerButton>(OverlappingActors[0]))
-			Button->Activate(Team);
+			Button->SR_Activate(Team);
 	}
 }
 
@@ -252,7 +271,20 @@ void AShooterCharacter::PlayPushButtonAnim()
 	Cast<UShooterCharacterAnim>(GetMesh()->GetAnimInstance())->PlayPushButtonMontage();
 }
 
-void AShooterCharacter::Punch()
+void AShooterCharacter::CL_Punch()
+{
+	PlayPunchAnim();
+
+	SR_Punch();
+}
+
+void AShooterCharacter::Multi_Punch_Implementation()
+{
+	if (!IsLocallyControlled())
+		PlayPunchAnim();
+}
+
+void AShooterCharacter::SR_Punch_Implementation()
 {
 	if (bIsShooting)
 		bIsShooting = false;
@@ -263,7 +295,8 @@ void AShooterCharacter::Punch()
 		return;
 
 	SetState(EShooterCharacterState::Punch);
-	PlayPunchAnim();
+
+	Multi_Punch();
 }
 
 void AShooterCharacter::PlayPunchAnim()
