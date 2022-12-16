@@ -45,6 +45,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AShooterCharacter, bIsShooting);
 	DOREPLIFETIME(AShooterCharacter, bIsAiming);
 	DOREPLIFETIME(AShooterCharacter, bIsSprinting);
+	DOREPLIFETIME(AShooterCharacter, bIsReloading);
 	DOREPLIFETIME(AShooterCharacter, AimPitch);
 	DOREPLIFETIME(AShooterCharacter, AimYaw);
 }
