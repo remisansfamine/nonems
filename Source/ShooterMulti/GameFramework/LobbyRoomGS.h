@@ -22,15 +22,24 @@ class SHOOTERMULTI_API ALobbyRoomGS : public AGameState
 
 	// Player start available for the other clients
 	UPROPERTY()
-	TArray<class APlayerStart*> PlayerStarts;
+	TArray<class APlayerStart*> RightPlayerStarts;
+	UPROPERTY()
+	TArray<class APlayerStart*> LeftPlayerStarts;
+	UPROPERTY()
+	TArray<class APlayerStart*> NonePlayerStarts;
 
 	// All client characters spawned
 	UPROPERTY()
 	TArray<ACharacter*> CharactersSpawned;
+
+	bool bClientHasSwitchTeam = false;
 	
 	void SetupPlayerStart();
 	
 public:
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void Multi_OnSwitchTeam();
+	
 	// Local player controller
 	UPROPERTY()
 	APlayerController* SelfController;
