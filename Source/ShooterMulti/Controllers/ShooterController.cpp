@@ -6,7 +6,9 @@ void AShooterController::BeginPlayingState()
 	Super::BeginPlayingState();
 
 	ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
-	ShooterCharacter->InitPlayer();
+
+	if (GetNetMode() == ENetMode::NM_DedicatedServer && GetLocalRole() == ROLE_Authority)
+		ShooterCharacter->InitPlayer();
 }
 
 void AShooterController::SetupInputComponent()

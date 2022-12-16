@@ -12,6 +12,7 @@
 
 // COMMENTARY SECOND
 
+
 AHealthCharacter::AHealthCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	LabelComponent = CreateDefaultSubobject<UCompensatorLabel>(TEXT("CompensatorLabel"));
@@ -64,6 +65,7 @@ void AHealthCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AHealthCharacter, Health);
+	DOREPLIFETIME(AHealthCharacter, Team);
 }
 
 bool AHealthCharacter::IsDead() const
@@ -321,7 +323,10 @@ void AHealthCharacter::Reset()
 void AHealthCharacter::SetTeam(ETeam InTeam)
 {
 	Team = InTeam;
+}
 
+void AHealthCharacter::Rep_PawnTeam()
+{
 	if (OnTeamSwitch.IsBound())
 		OnTeamSwitch.Broadcast();
 }

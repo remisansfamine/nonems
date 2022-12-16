@@ -27,7 +27,7 @@ public:
 	virtual void OverrideWith(class APlayerState* PlayerState) override;
 	
 	virtual void Rep_ClientDatas() override;
-
+	
 	UFUNCTION()
 	void Reset();
 };

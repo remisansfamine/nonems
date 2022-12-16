@@ -19,7 +19,7 @@ protected:
 	bool bIsDisappearing;
 	TArray<UMaterialInstanceDynamic*> DissolveMaterials;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	UPROPERTY(ReplicatedUsing = Rep_PawnTeam, BlueprintReadOnly, Category = "Character")
 	ETeam Team;
 
 	UPROPERTY(EditAnywhere, Category = "Character|Health", meta = (ClampMin = "0.0"))
@@ -59,7 +59,10 @@ public:
 
 	DECLARE_EVENT(AHealthCharacter, TeamSwitchEvent)
 	TeamSwitchEvent OnTeamSwitch;
- 
+
+	UFUNCTION()
+	void Rep_PawnTeam();
+	
 	AHealthCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintPure, Category = "Character|Health")
