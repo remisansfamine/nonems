@@ -24,6 +24,8 @@ void ADeathMatchGS::BeginPlay()
 
 	GameInstance = GetGameInstance<UPlayerGI>();
 	CurrentTime = GameInstance->GetMaxTime();
+	MaxTeamScore = GameInstance->GetMaxScore();
+	
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ADeathMatchGS::AdvanceTimer, 1.0f, true);
 }
 
@@ -32,6 +34,7 @@ void ADeathMatchGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ADeathMatchGS, RedTeamScore);
 	DOREPLIFETIME(ADeathMatchGS, BlueTeamScore);
+	DOREPLIFETIME(ADeathMatchGS, MaxTeamScore);
 	DOREPLIFETIME(ADeathMatchGS, CurrentTime);
 }
 
@@ -56,19 +59,21 @@ void ADeathMatchGS::SetScore(ETeam Team, int32 NewScore)
 	if (!GameMode)
 		return;
 
+	MaxTeamScore = GameMode->MaxKill;
+	
 	switch (Team)
 	{
 	case ETeam::Red:
 		RedTeamScore += NewScore;
 		
-		if (RedTeamScore >= GameMode->MaxKill)
+		if (RedTeamScore >= MaxTeamScore)
 			UpdateEndHud(Team);
 
 		break;
 
 	case ETeam::Blue:
 		BlueTeamScore += NewScore;
-		if (BlueTeamScore >= GameMode->MaxKill)
+		if (BlueTeamScore >= MaxTeamScore)
 			UpdateEndHud(Team);
 		
 		break;
@@ -139,6 +144,12 @@ void ADeathMatchGS::Reset()
 
 	for (auto& res : Resetables)
 		Cast<IResetable>(res)->Reset();
+}
+
+void ADeathMatchGS::Rep_TeamScores()
+{
+	if (OnScoresUpdated.IsBound())
+		OnScoresUpdated.Broadcast();
 }
 
 void ADeathMatchGS::ResetAfterDelay()

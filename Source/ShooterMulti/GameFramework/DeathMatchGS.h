@@ -7,6 +7,8 @@
 #include "ShooterMulti/LagCompensator.h"
 #include "DeathMatchGS.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateScores);
+
 UCLASS()
 class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase
 {
@@ -26,10 +28,12 @@ protected:
 	int32 CurrentTime;
 	UPROPERTY(BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 CurrentAICount = 0;
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Shooter|GameState")
+	UPROPERTY(ReplicatedUsing = Rep_TeamScores, BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 RedTeamScore = 0;
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Shooter|GameState")
+	UPROPERTY(ReplicatedUsing = Rep_TeamScores, BlueprintReadOnly, Category = "Shooter|GameState")
 	int32 BlueTeamScore = 0;
+	UPROPERTY(ReplicatedUsing = Rep_TeamScores, BlueprintReadOnly, Category = "Shooter|GameState")
+	int32 MaxTeamScore = 0;
 
 	void AdvanceTimer();
 
@@ -37,7 +41,12 @@ protected:
 	void Reset();
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FUpdateScores OnScoresUpdated;
 
+	UFUNCTION()
+	void Rep_TeamScores();
+	
 	DECLARE_EVENT_OneParam(ADeathMatchGS, FOnPlayerAddAndRemove, ADeathMatchGS*)
 	FOnPlayerAddAndRemove OnPlayerNum;
 	DECLARE_EVENT_OneParam(ADeathMatchGS, TeamWinEvent, ETeam)
