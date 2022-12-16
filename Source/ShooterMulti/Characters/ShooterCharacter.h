@@ -61,7 +61,8 @@ protected:
 	void InvincibilityFX_Implementation(float Duration) {};
 
 public:
-	bool bIsShooting = false;
+	UPROPERTY(BlueprintReadOnly, Replicated, Category=Character)
+	uint32 bIsShooting:1;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsAiming, Category=Character)
 	uint32 bIsAiming:1;
@@ -123,13 +124,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void AbortReload();
 
+	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")							void CL_PushButton();
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Character|Shooter")	void Multi_PushButton();
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Character|Shooter")			void SR_PushButton();
+	
+	
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void PushButton();
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Character|Shooter")
 	void SR_InflictPushButton();
 
-	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void Punch();
+	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")							void CL_Punch();
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Character|Shooter")	void Multi_Punch();
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Character|Shooter")			void SR_Punch();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Character|Shooter")
 	void RefreshTeamHUD(ETeam InTeam);

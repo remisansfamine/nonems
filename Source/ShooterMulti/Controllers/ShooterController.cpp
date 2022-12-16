@@ -136,13 +136,13 @@ void AShooterController::EndReload()
 void AShooterController::PushButton()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->PushButton();
+		ShooterCharacter->CL_PushButton();
 }
 
 void AShooterController::Punch()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
-		ShooterCharacter->Punch();
+		ShooterCharacter->CL_Punch();
 }
 
 void AShooterController::DisableInput(APlayerController* PlayerController)

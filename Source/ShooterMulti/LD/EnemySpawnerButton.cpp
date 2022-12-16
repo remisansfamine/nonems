@@ -46,9 +46,9 @@ void AEnemySpawnerButton::OnRep_TeamChange() const
 	material->SetVectorParameterValue("ColorActive", ColorMap[mTeam]);
 }
 
-void AEnemySpawnerButton::Activate(ETeam team)
+void AEnemySpawnerButton::SR_Activate(ETeam team)
 {
-	if (mTeam == team)
+	if (!HasAuthority() || mTeam == team)
 		return;
 	
 	mTeam = team;
