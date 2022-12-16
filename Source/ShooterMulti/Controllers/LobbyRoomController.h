@@ -16,6 +16,8 @@ class SHOOTERMULTI_API ALobbyRoomController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SR_ChangeGameMap(int Dir);
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SR_GetAndVerifyPassword(const FString& password);

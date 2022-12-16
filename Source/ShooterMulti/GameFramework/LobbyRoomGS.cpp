@@ -3,6 +3,7 @@
 
 #include "LobbyRoomGS.h"
 
+#include "EngineUtils.h"
 #include "InteractiveToolManager.h"
 #include "LobbyRoomPS.h"
 #include "GameFramework/PlayerStart.h"
@@ -40,6 +41,16 @@ void ALobbyRoomGS::SetupPlayerStart()
 	}
 }
 
+void ALobbyRoomGS::SetNewCurrentMap(const FString& MapName, const FString& MapPath)
+{
+	FMapPreviewSetup MapSetup;
+
+	MapSetup.Name = MapName;
+	MapSetup.Path = MapPath;
+
+	CurrentMapSetup = MapSetup;
+}
+
 void ALobbyRoomGS::Multi_OnSwitchTeam_Implementation()
 {
 	if (IsRunningDedicatedServer())
@@ -50,8 +61,19 @@ void ALobbyRoomGS::Multi_OnSwitchTeam_Implementation()
 
 void ALobbyRoomGS::OnSwitchTeam()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SWITCH TEAM"))
 	bClientHasSwitchTeam = true;
+}
+
+void ALobbyRoomGS::OnRep_SetNewCurrentMap()
+{
+	CurrentMapPreviewName = CurrentMapSetup.Name;
+
+	// Dont always reload the texture (store it)
+	CurrentMapPreviewTexture = LoadObject<UTexture2D>(GetTransientPackage(), *CurrentMapSetup.Path);
+
+	// Action on rep
+	if (MapChangeDelegate.IsBound())
+		MapChangeDelegate.Broadcast();
 }
 
 void ALobbyRoomGS::BeginPlay()
@@ -144,4 +166,10 @@ void ALobbyRoomGS::UpdateCharacters()
 		// Add the character to the list
 		CharactersSpawned.Add(Character);
 	}
+}
+
+void ALobbyRoomGS::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ALobbyRoomGS, CurrentMapSetup);
 }

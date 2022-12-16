@@ -66,6 +66,13 @@ bool ALobbyRoomController::IsHost()
 	return false;
 }
 
+void ALobbyRoomController::SR_ChangeGameMap_Implementation(int Dir)
+{
+	ALobbyRoomGM* LobbyGameMode = GetWorld()->GetAuthGameMode<ALobbyRoomGM>();
+
+	LobbyGameMode->OnMapSelectionChange(Dir);
+}
+
 const FClientSetup ALobbyRoomController::GetClientSetup()
 {
 	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();

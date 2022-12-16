@@ -33,7 +33,16 @@ class SHOOTERMULTI_API ALobbyRoomGM : public AGameMode
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere)
+	TMap<FString, UTexture2D*> MapPreviewsDico;
+
+	UPROPERTY()
+	TArray<FString> MapNames;
+
 public:
+	UFUNCTION(BlueprintCallable)
+	void OnMapSelectionChange(int dir);
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckUserPassword(const FString& password, const APlayerController* controller);
 	
@@ -45,7 +54,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetMaxTime(const int Time);
-
 	
 	UFUNCTION(BlueprintCallable)
 	void SetMaxScoreInInstance(const int Score);
@@ -54,4 +62,6 @@ public:
 	void SetMaxTimeInInstance(const int Time);
 	
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	virtual void BeginPlay() override;
 };
