@@ -98,6 +98,7 @@ void ALobbyRoomGS::SpawnSelfCharacter(APlayerController* LocalController)
 
 	// Setup the character
 	PlayerState->Pawn = Character;
+	PlayerState->SetPawn();
 
 	const FString& Name = PlayerState->GetClientSetup();
 	

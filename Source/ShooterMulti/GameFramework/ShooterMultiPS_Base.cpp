@@ -20,7 +20,10 @@ void AShooterMultiPS_Base::CopyProperties(APlayerState* PlayerState)
 	{
 		AShooterMultiPS_Base* BasePlayerState = Cast<AShooterMultiPS_Base>(PlayerState);
 		if (BasePlayerState)
+		{
+			ClientSetup.bIsReady = false;
 			BasePlayerState->ClientSetup = ClientSetup;
+		}
 	}
 }
 
