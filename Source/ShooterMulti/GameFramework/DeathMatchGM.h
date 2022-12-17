@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+#include "GameFrameWork/PlayerStart.h"
 #include "DeathMatchGM.generated.h"
 
 
@@ -8,7 +9,7 @@ UCLASS()
 class SHOOTERMULTI_API ADeathMatchGM : public AGameModeBase
 {
 	GENERATED_BODY()
-
+	
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float InvincibilityTime = 3.0f;
@@ -45,4 +46,6 @@ public:
 	void Quit();
 
 	void UpdateScoreOnDeath(class AHealthCharacter* Killed, class AHealthCharacter* Killer) const;
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 };

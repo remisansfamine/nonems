@@ -90,3 +90,10 @@ void ADeathMatchGM::UpdateScoreOnDeath(AHealthCharacter* Killed, AHealthCharacte
 	GS->SetScore(KillerTeam, KillerTeamScore + KillScore);
 	KillerPS->SetScore(KillerPS->GetScore() + KillScore);
 }
+
+AActor* ADeathMatchGM::ChoosePlayerStart_Implementation(AController* Player)
+{
+	ADeathMatchGS* CurGameState = GetGameState<ADeathMatchGS>();
+
+	return CurGameState->GetValidPlayerStart(Player);
+}

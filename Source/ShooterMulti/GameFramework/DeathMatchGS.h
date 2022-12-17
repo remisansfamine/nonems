@@ -15,6 +15,11 @@ class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase
 	GENERATED_BODY()
 
 	UPlayerGI* GameInstance;
+
+	UPROPERTY()
+	TArray<APlayerStart*> RedTeamPlayerStarts;
+	UPROPERTY()
+	TArray<APlayerStart*> BlueTeamPlayerStarts;
 	
 protected:
 	UPROPERTY()
@@ -36,6 +41,10 @@ protected:
 	int32 MaxTeamScore = 0;
 
 	void AdvanceTimer();
+
+	void SetTeamsPlayerStarts();
+
+	AActor* FindValidPlayerStart(AController* Controller, const TArray<APlayerStart*>& PlayerStartList);
 
 	UFUNCTION()
 	void Reset();
@@ -80,6 +89,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void ShowTeamWinHUD(ETeam Team);
 	void ShowTeamWinHUD_Implementation(ETeam Team) {};
+
+	AActor* GetValidPlayerStart(AController* Controller);
 	
 	int NewFrequency(int Sec);
 
