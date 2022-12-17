@@ -134,7 +134,7 @@ void UShooterCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSe
 		return;
 	
 	// Check for a change in aim state. Players toggle aim by changing bWantsToAim.
-	const bool bIsAiming = ShooterCharacterOwner->bIsAiming;
+	const bool bIsAiming = ShooterCharacterOwner->GetState() == EShooterCharacterState::Aim;
 	if (bIsAiming && (!Safe_bWantsToAim || !CanAimInCurrentState()))
 	{
 		StopAiming(false);
@@ -145,7 +145,7 @@ void UShooterCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSe
 	}
 
 	// Check for a change in sprint state. Players toggle sprint by changing bWantsToSprint.
-	const bool bIsSprinting = ShooterCharacterOwner->bIsSprinting;
+	const bool bIsSprinting = ShooterCharacterOwner->GetState() == EShooterCharacterState::Sprint;
 	if (bIsSprinting && (!Safe_bWantsToSprint || !CanSprintInCurrentState()))
 	{
 		StopSprinting(false);
@@ -156,7 +156,7 @@ void UShooterCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSe
 	}
 
 	// Check for a change in reload state. Players toggle reload by changing bWantsToReload.
-	const bool bIsReloading = ShooterCharacterOwner->bIsReloading;
+	const bool bIsReloading = ShooterCharacterOwner->GetState() == EShooterCharacterState::Reload;
 	if (bIsReloading && (!Safe_bWantsToReload || !CanReloadInCurrentState()))
 	{
 		StopReloading(false);
@@ -174,17 +174,17 @@ void UShooterCharacterMovement::UpdateCharacterStateAfterMovement(float DeltaSec
 		return;
 	
 	// Stop aim if no longer allowed to aim
-	const bool bIsAiming = ShooterCharacterOwner->bIsAiming;
+	const bool bIsAiming = ShooterCharacterOwner->GetState() == EShooterCharacterState::Aim;
 	if (bIsAiming && !CanAimInCurrentState())
 		StopAiming(false);
 
 	// Stop sprint if no longer allowed to sprint
-	const bool bIsSprinting = ShooterCharacterOwner->bIsSprinting;
+	const bool bIsSprinting = ShooterCharacterOwner->GetState() == EShooterCharacterState::Sprint;
 	if (bIsSprinting && !CanSprintInCurrentState())
 		StopSprinting(false);
 
 	// Stop reload if no longer allowed to reload
-	const bool bIsReloading = ShooterCharacterOwner->bIsReloading;
+	const bool bIsReloading = ShooterCharacterOwner->GetState() == EShooterCharacterState::Reload;
 	if (bIsReloading && !CanReloadInCurrentState())
 		StopReloading(false);
 }
@@ -195,7 +195,7 @@ void UShooterCharacterMovement::StartReloading(bool bClientSimulation)
 		return;
 
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsReloading = true;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::Reload);
 	
 	ShooterCharacterOwner->OnStartReload();
 }
@@ -203,7 +203,7 @@ void UShooterCharacterMovement::StartReloading(bool bClientSimulation)
 void UShooterCharacterMovement::StopReloading(bool bClientSimulation)
 {
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsReloading = false;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::IdleRun);
 	
 	ShooterCharacterOwner->OnEndReload();
 }
@@ -214,7 +214,7 @@ void UShooterCharacterMovement::StartAiming(bool bClientSimulation)
 		return;
 
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsAiming = true;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::Aim);
 	
 	ShooterCharacterOwner->OnStartAim();
 }
@@ -222,7 +222,7 @@ void UShooterCharacterMovement::StartAiming(bool bClientSimulation)
 void UShooterCharacterMovement::StopAiming(bool bClientSimulation)
 {
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsAiming = false;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::IdleRun);
 	
 	ShooterCharacterOwner->OnEndAim();
 }
@@ -233,7 +233,7 @@ void UShooterCharacterMovement::StartSprinting(bool bClientSimulation)
 		return;
 
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsSprinting = true;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::Sprint);
 	
 	ShooterCharacterOwner->OnStartSprint();
 }
@@ -241,7 +241,7 @@ void UShooterCharacterMovement::StartSprinting(bool bClientSimulation)
 void UShooterCharacterMovement::StopSprinting(bool bClientSimulation)
 {
 	if (!bClientSimulation)
-		ShooterCharacterOwner->bIsSprinting = false;
+		ShooterCharacterOwner->SetState(EShooterCharacterState::IdleRun);
 	
 	ShooterCharacterOwner->OnEndSprint();
 }

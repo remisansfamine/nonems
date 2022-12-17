@@ -34,9 +34,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Character|Shooter")
 	UPlayerCameraComponent* Camera;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Character|Shooter")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Character|Shooter")
 	EShooterCharacterState State;
-	EShooterCharacterState PrevState;
 	
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	float AimPitch;
@@ -63,15 +62,6 @@ protected:
 public:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category=Character)
 	uint32 bIsShooting:1;
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsAiming, Category=Character)
-	uint32 bIsAiming:1;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsSprinting, Category=Character)
-	uint32 bIsSprinting:1;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_IsReloading, Category=Character)
-	uint32 bIsReloading:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character|Shooter", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MinSprintMagnitude = .3f;

@@ -74,7 +74,7 @@ void UShooterCharacterAnim::MontageEnded() const
 {
 	if (ShooterCharacter->IsLocallyControlled())
 	{
-		if (ShooterCharacter->bIsReloading)
+		if (ShooterCharacter->GetState() == EShooterCharacterState::Reload)
 			ShooterCharacter->EndWantsToReload();
 	}
 		

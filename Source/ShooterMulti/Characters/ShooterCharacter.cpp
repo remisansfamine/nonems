@@ -42,10 +42,7 @@ AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AShooterCharacter, bIsShooting);
-	DOREPLIFETIME(AShooterCharacter, bIsAiming);
-	DOREPLIFETIME(AShooterCharacter, bIsSprinting);
-	DOREPLIFETIME(AShooterCharacter, bIsReloading);
+	DOREPLIFETIME(AShooterCharacter, State);
 	DOREPLIFETIME(AShooterCharacter, AimPitch);
 	DOREPLIFETIME(AShooterCharacter, AimYaw);
 }
@@ -57,7 +54,6 @@ EShooterCharacterState AShooterCharacter::GetState() const
 
 void AShooterCharacter::SetState(EShooterCharacterState InState)
 {
-	PrevState = State;
 	State = InState;
 }
 
@@ -337,7 +333,11 @@ void AShooterCharacter::OnRep_IsAiming()
 	if (!ShooterCharacterMovement)
 		return;
 
-	bIsAiming ? ShooterCharacterMovement->StartAiming(true) : ShooterCharacterMovement->StopAiming(true);
+	if (State == EShooterCharacterState::Aim)
+		ShooterCharacterMovement->StartAiming(true);
+	else
+		ShooterCharacterMovement->StopAiming(true);
+	
 	ShooterCharacterMovement->bNetworkUpdateReceived = true;
 }
 
@@ -346,7 +346,11 @@ void AShooterCharacter::OnRep_IsSprinting()
 	if (!ShooterCharacterMovement)
 		return;
 
-	bIsSprinting ? ShooterCharacterMovement->StartSprinting(true) : ShooterCharacterMovement->StopSprinting(true);
+	if (State == EShooterCharacterState::Sprint)
+		ShooterCharacterMovement->StartSprinting(true);
+	else
+		ShooterCharacterMovement->StopSprinting(true);
+	
 	ShooterCharacterMovement->bNetworkUpdateReceived = true;
 }
 
@@ -355,7 +359,11 @@ void AShooterCharacter::OnRep_IsReloading()
 	if (!ShooterCharacterMovement)
 		return;
 
-	bIsReloading ? ShooterCharacterMovement->StartReloading(true) : ShooterCharacterMovement->StopReloading(true);
+	if (State == EShooterCharacterState::Reload)
+		ShooterCharacterMovement->StartReloading(true);
+	else
+		ShooterCharacterMovement->StopReloading(true);
+	
 	ShooterCharacterMovement->bNetworkUpdateReceived = true;
 }
 
@@ -368,8 +376,6 @@ void AShooterCharacter::OnStartAim()
 
 void AShooterCharacter::OnEndAim()
 {
-	SetState(PrevState);
-
 	Camera->SwitchToWalkCamera();
 }
 
@@ -386,18 +392,12 @@ void AShooterCharacter::OnStartSprint()
 	if (State != EShooterCharacterState::IdleRun && State != EShooterCharacterState::Jump)
 		return;
 
-	if (State == EShooterCharacterState::Jump)
-		PrevState = EShooterCharacterState::Sprint;
-	else
-		SetState(EShooterCharacterState::Sprint);
+	SetState(EShooterCharacterState::Sprint);
 }
 
 void AShooterCharacter::OnEndSprint()
 {
-	if (State == EShooterCharacterState::Jump)
-		PrevState = EShooterCharacterState::IdleRun;
-	else
-		SetState(EShooterCharacterState::IdleRun);
+	
 }
 
 void AShooterCharacter::OnStartReload()

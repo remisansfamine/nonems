@@ -37,7 +37,5 @@ public:
 	void DisableInput(APlayerController* PlayerController) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Shooter|PlayerController")
-	void EndJump();
-	UFUNCTION(BlueprintCallable, Category = "Shooter|PlayerController")
 	void EndReload();
 };
