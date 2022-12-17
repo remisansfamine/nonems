@@ -3,7 +3,8 @@
 #include "AnimationUtilities.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PawnMovementComponent.h"
-	
+#include "ShooterMulti/Movements/ShooterCharacterMovement.h"
+
 void UShooterCharacterAnim::NativeInitializeAnimation()
 {
 	ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
@@ -54,7 +55,7 @@ void UShooterCharacterAnim::PlayHitMontage()
 
 void UShooterCharacterAnim::AnimNotify_PunchHit(UAnimNotify* Notify) const
 {
-	if (ShooterCharacter)
+	if (ShooterCharacter && ShooterCharacter->IsLocallyControlled())
 		ShooterCharacter->SR_InflictPunch(GetWorld()->GetGameState()->GetServerWorldTimeSeconds());
 }
 
@@ -72,11 +73,15 @@ void UShooterCharacterAnim::AnimNotify_PushButton(UAnimNotify* Notify) const
 
 void UShooterCharacterAnim::MontageEnded() const
 {
-	if (ShooterCharacter->IsLocallyControlled())
+	if (ShooterCharacter->HasAuthority())
 	{
-		if (ShooterCharacter->GetState() == EShooterCharacterState::Reload)
+		if (ShooterCharacter->GetState() == EShooterCharacterState::PushButton ||
+			ShooterCharacter->GetState() == EShooterCharacterState::Punch)
+			ShooterCharacter->SetState(EShooterCharacterState::IdleRun);
+	}
+	else
+	{
+		if (ShooterCharacter->ShooterCharacterMovement->Safe_bWantsToReload)
 			ShooterCharacter->EndWantsToReload();
 	}
-		
-	ShooterCharacter->SetState(EShooterCharacterState::IdleRun);
 }

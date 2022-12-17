@@ -25,9 +25,6 @@ class SHOOTERMULTI_API AShooterCharacter : public AHealthCharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Movement)
-	class UShooterCharacterMovement* ShooterCharacterMovement;
-	
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Character|Shooter")
 	UWeaponComponent* Weapon;
 
@@ -60,6 +57,9 @@ protected:
 	void InvincibilityFX_Implementation(float Duration) {};
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Movement)
+	class UShooterCharacterMovement* ShooterCharacterMovement;
+	
 	UPROPERTY(BlueprintReadOnly, Replicated, Category=Character)
 	uint32 bIsShooting:1;
 
@@ -69,17 +69,17 @@ public:
 	AShooterCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	EShooterCharacterState GetState() const;
-	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	void SetState(EShooterCharacterState InState);
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	UWeaponComponent* GetWeaponComponent();
+	EShooterCharacterState GetState() const { return State; }
+	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
+	void SetState(EShooterCharacterState InState) { State = InState; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
-	UPlayerCameraComponent* GetCameraComponent();
+	UWeaponComponent* GetWeaponComponent() { return Weapon; }
+
+	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
+	UPlayerCameraComponent* GetCameraComponent() const { return Camera; }
 
 	void InitPlayer();
 
@@ -92,10 +92,12 @@ public:
 	UFUNCTION()
 	void EndWantsToSprint();
 
-	UFUNCTION()
-	void StartJump();
-	UFUNCTION()
-	void EndJump();
+	UFUNCTION() void StartJump();
+	UFUNCTION(Server, Reliable) void SR_StartJump();
+
+	UFUNCTION() void EndJump();
+	UFUNCTION(Server, Reliable) void SR_EndJump();
+
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Shooter")
 	void StartWantsToAim();
@@ -152,4 +154,5 @@ public:
 	virtual void OnEndReload();
 
 	void ReloadWeapon();
+	bool CanReloadWeapon() const;
 };

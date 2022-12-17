@@ -92,6 +92,13 @@ void AShooterController::StartJump()
 		ShooterCharacter->StartJump();
 }
 
+void AShooterController::EndJump()
+{
+	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())
+		ShooterCharacter->EndJump();
+}
+
+
 void AShooterController::StartAim()
 {
 	if (IsValid(ShooterCharacter) && !ShooterCharacter->IsDead())

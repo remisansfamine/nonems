@@ -258,6 +258,6 @@ bool UShooterCharacterMovement::CanSprintInCurrentState() const
 
 bool UShooterCharacterMovement::CanReloadInCurrentState() const
 {
-	return !IsFalling() && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics();
+	return !IsFalling() && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics() && ShooterCharacterOwner->CanReloadWeapon();
 }
 

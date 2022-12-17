@@ -163,6 +163,7 @@ public:
 	bool TryToShoot();
 
 	void Reload();
+	bool CanReload() const;
 
 	void GetAmmo(int Count);
 };

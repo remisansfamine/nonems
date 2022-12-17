@@ -155,6 +155,11 @@ void UWeaponComponent::Reload()
 	}
 }
 
+bool UWeaponComponent::CanReload() const
+{
+	return 	AmmoCount > 0 && WeaponMagazineSize > LoadedAmmo;
+}
+
 void UWeaponComponent::GetAmmo(int Count)
 {
 	AmmoCount = FMath::Min(AmmoCount + Count, MaxAmmo);
@@ -275,7 +280,7 @@ void UWeaponComponent::SpawnEmitterAtLocation(	UParticleSystem* EmitterTemplate,
 																				SpawnTransform,
 																				true,
 																				EPSCPoolMethod::AutoRelease);
-	if (Source != FVector::ZeroVector && Target != FVector::ZeroVector)
+	if (ParticleSystemComponent && Source != FVector::ZeroVector && Target != FVector::ZeroVector)
 	{
 		ParticleSystemComponent->SetBeamSourcePoint(0, Source, 0);
 		ParticleSystemComponent->SetBeamTargetPoint(0, Target, 0);

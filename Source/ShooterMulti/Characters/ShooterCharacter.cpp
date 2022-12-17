@@ -47,26 +47,6 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AShooterCharacter, AimYaw);
 }
 
-EShooterCharacterState AShooterCharacter::GetState() const
-{
-	return State;
-}
-
-void AShooterCharacter::SetState(EShooterCharacterState InState)
-{
-	State = InState;
-}
-
-UWeaponComponent* AShooterCharacter::GetWeaponComponent()
-{
-	return Weapon;
-}
-
-UPlayerCameraComponent* AShooterCharacter::GetCameraComponent()
-{
-	return Camera;
-}
-
 void AShooterCharacter::InitPlayer()
 {
 	AShooterPS* PS = GetPlayerState<AShooterPS>();
@@ -120,6 +100,9 @@ void AShooterCharacter::EndWantsToSprint()
 
 void AShooterCharacter::StartJump()
 {
+	if (!HasAuthority())
+		SR_StartJump();
+	
 	if (bIsShooting)
 		EndShoot();
 
@@ -131,24 +114,34 @@ void AShooterCharacter::StartJump()
 	if (CanJump() && (State == EShooterCharacterState::IdleRun || State == EShooterCharacterState::Sprint))
 	{
 		SetState(EShooterCharacterState::Jump);
-		Jump();
+		Super::Jump();
 	}
+}
+
+void AShooterCharacter::SR_StartJump_Implementation()
+{
+	StartJump();
 }
 
 void AShooterCharacter::EndJump()
 {
-	if (State != EShooterCharacterState::Jump && State != EShooterCharacterState::Falling)
-		return;
+	if (!HasAuthority())
+		SR_StartJump();
+	
+	if (State == EShooterCharacterState::Jump || State == EShooterCharacterState::Falling)
+	{
+		SetState(EShooterCharacterState::IdleRun);
+		Super::StopJumping();
+	}
+}
 
-	SetState(EShooterCharacterState::IdleRun);
-	StopJumping();
+void AShooterCharacter::SR_EndJump_Implementation()
+{
+	EndJump();
 }
 
 void AShooterCharacter::StartWantsToAim()
 {
-	if (State != EShooterCharacterState::IdleRun)
-		return;
-
 	ShooterCharacterMovement->Safe_bWantsToAim = true;
 }
 
@@ -211,27 +204,24 @@ void AShooterCharacter::Falling()
 
 void AShooterCharacter::CL_PushButton()
 {
-	PlayPushButtonAnim();
-
 	SR_PushButton();
 }
 
 void AShooterCharacter::Multi_PushButton_Implementation()
 {
-	if (!IsLocallyControlled())
-		PlayPushButtonAnim();
+	PlayPushButtonAnim();
 }
 
 void AShooterCharacter::SR_PushButton_Implementation()
 {
-	if (bIsShooting)
-		bIsShooting = false;
-	else if (State == EShooterCharacterState::Reload)
-		AbortReload();
-
 	if (State != EShooterCharacterState::IdleRun)
 		return;
 
+	EndShoot();
+
+	if (State == EShooterCharacterState::Reload)
+		AbortReload();
+	
 	SetState(EShooterCharacterState::PushButton);
 	
 	Multi_PushButton();
@@ -270,22 +260,19 @@ void AShooterCharacter::PlayPushButtonAnim()
 
 void AShooterCharacter::CL_Punch()
 {
-	PlayPunchAnim();
-
 	SR_Punch();
 }
 
 void AShooterCharacter::Multi_Punch_Implementation()
 {
-	if (!IsLocallyControlled())
-		PlayPunchAnim();
+	PlayPunchAnim();
 }
 
 void AShooterCharacter::SR_Punch_Implementation()
 {
-	if (bIsShooting)
-		bIsShooting = false;
-	else if (State == EShooterCharacterState::Reload)
+	EndShoot();
+	
+	if (State == EShooterCharacterState::Reload)
 		AbortReload();
 
 	if (State != EShooterCharacterState::IdleRun)
@@ -334,7 +321,11 @@ void AShooterCharacter::OnRep_IsAiming()
 		return;
 
 	if (State == EShooterCharacterState::Aim)
+	{
+		EndWantsToSprint();
+		EndWantsToReload();
 		ShooterCharacterMovement->StartAiming(true);
+	}
 	else
 		ShooterCharacterMovement->StopAiming(true);
 	
@@ -347,7 +338,11 @@ void AShooterCharacter::OnRep_IsSprinting()
 		return;
 
 	if (State == EShooterCharacterState::Sprint)
+	{
+		EndWantsToAim();
+		EndWantsToReload();
 		ShooterCharacterMovement->StartSprinting(true);
+	}
 	else
 		ShooterCharacterMovement->StopSprinting(true);
 	
@@ -358,9 +353,13 @@ void AShooterCharacter::OnRep_IsReloading()
 {
 	if (!ShooterCharacterMovement)
 		return;
-
+	
 	if (State == EShooterCharacterState::Reload)
+	{
+		EndWantsToAim();
+		EndWantsToSprint();
 		ShooterCharacterMovement->StartReloading(true);
+	}
 	else
 		ShooterCharacterMovement->StopReloading(true);
 	
@@ -369,7 +368,7 @@ void AShooterCharacter::OnRep_IsReloading()
 
 void AShooterCharacter::OnStartAim()
 {
-	SetState(EShooterCharacterState::Aim);
+	EndWantsToSprint();
 	
 	Camera->SwitchToAimCamera();
 }
@@ -386,13 +385,8 @@ void AShooterCharacter::OnStartSprint()
 
 	if (State == EShooterCharacterState::Reload)
 		AbortReload();
-	else if (State == EShooterCharacterState::Aim)
-		EndWantsToAim();
-
-	if (State != EShooterCharacterState::IdleRun && State != EShooterCharacterState::Jump)
-		return;
-
-	SetState(EShooterCharacterState::Sprint);
+	
+	EndWantsToAim();
 }
 
 void AShooterCharacter::OnEndSprint()
@@ -403,30 +397,22 @@ void AShooterCharacter::OnEndSprint()
 void AShooterCharacter::OnStartReload()
 {
 	if (Weapon && Weapon->AmmoCount > 0 && Weapon->WeaponMagazineSize > Weapon->LoadedAmmo)
-	{
-		if (State == EShooterCharacterState::Aim)
-			EndWantsToAim();
-		else if (bIsShooting)
-			bIsShooting = false;
-
-		if (State != EShooterCharacterState::IdleRun)
-			return;
-
-		SetState(EShooterCharacterState::Reload);
-	}
+		EndShoot();
 }
 
 void AShooterCharacter::OnEndReload()
 {
-	if (State != EShooterCharacterState::Reload)
-		return;
 
-	SetState(EShooterCharacterState::IdleRun);
 }
 
 void AShooterCharacter::ReloadWeapon()
 {
 	if (Weapon)
 		Weapon->Reload();
+}
+
+bool AShooterCharacter::CanReloadWeapon() const
+{
+	return Weapon && Weapon->CanReload();
 }
 
