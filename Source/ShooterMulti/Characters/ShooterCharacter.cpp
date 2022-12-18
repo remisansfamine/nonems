@@ -257,16 +257,6 @@ void AShooterCharacter::PlayPushButtonAnim()
 
 void AShooterCharacter::CL_Punch()
 {
-	SR_Punch();
-}
-
-void AShooterCharacter::Multi_Punch_Implementation()
-{
-	PlayPunchAnim();
-}
-
-void AShooterCharacter::SR_Punch_Implementation()
-{
 	EndShoot();
 	
 	if (State == EShooterCharacterState::Reload)
@@ -276,6 +266,32 @@ void AShooterCharacter::SR_Punch_Implementation()
 		return;
 
 	SetState(EShooterCharacterState::Punch);
+
+	PlayPunchAnim();
+	
+	SR_Punch();
+}
+
+void AShooterCharacter::Multi_Punch_Implementation()
+{
+	if (!IsLocallyControlled())
+		PlayPunchAnim();
+}
+
+void AShooterCharacter::SR_Punch_Implementation()
+{
+	if (!IsLocallyControlled())
+	{
+		EndShoot();
+	
+		if (State == EShooterCharacterState::Reload)
+			AbortReload();
+
+		if (State != EShooterCharacterState::IdleRun)
+			return;
+
+		SetState(EShooterCharacterState::Punch);
+	}
 
 	Multi_Punch();
 }
