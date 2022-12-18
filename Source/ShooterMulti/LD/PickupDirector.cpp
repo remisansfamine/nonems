@@ -26,6 +26,9 @@ void APickupDirector::RegisterPickup(const UPickupComponent& PickupComponent)
 
 void APickupDirector::TrySpawnPickup()
 {
+	if (SpawnPoints.Num() == 0 || IsSpawnFullArray.Num() == 0)
+		return;
+	
 	if (PickupBPs.Num() == 0 || bIsFull)
 		return;
 	
@@ -50,6 +53,12 @@ void APickupDirector::TrySpawnPickup()
 
 bool APickupDirector::SpawnPickup(int pickupIndex, int spawnPointIndex)
 {
+	if (spawnPointIndex >= SpawnPoints.Num())
+	{
+		UE_LOG(LogTemp, Error, TEXT("OUT OF BOUNDS"));
+		return false;
+	}
+	
 	const auto pickupBP = PickupBPs[pickupIndex];
 	const auto pickupLocation = SpawnPoints[spawnPointIndex]->GetActorLocation();
 	const auto pickupRotation = SpawnPoints[spawnPointIndex]->GetActorRotation();

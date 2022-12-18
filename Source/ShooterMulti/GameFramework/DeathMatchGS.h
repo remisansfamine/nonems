@@ -20,6 +20,8 @@ class SHOOTERMULTI_API ADeathMatchGS : public AGameState
 	TArray<APlayerStart*> RedTeamPlayerStarts;
 	UPROPERTY()
 	TArray<APlayerStart*> BlueTeamPlayerStarts;
+	UPROPERTY()
+	TArray<APlayerStart*> RandomPlayerStarts;
 	
 protected:
 	UPROPERTY()

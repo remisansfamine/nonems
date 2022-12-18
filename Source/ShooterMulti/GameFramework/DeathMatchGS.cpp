@@ -58,6 +58,8 @@ void ADeathMatchGS::SetTeamsPlayerStarts()
 			BlueTeamPlayerStarts.Add(PStart);
 		else if (PStart->PlayerStartTag == "RedTeam_Start")
 			RedTeamPlayerStarts.Add(PStart);
+		else
+			RandomPlayerStarts.Add(PStart);
 	}
 }
 
@@ -238,7 +240,7 @@ AActor* ADeathMatchGS::GetValidPlayerStart(AController* Controller)
 		return FindValidPlayerStart(Controller, RedTeamPlayerStarts);
 	}
 	
-	return nullptr;
+	return FindValidPlayerStart(Controller, RandomPlayerStarts);
 }
 
 void ADeathMatchGS::EndGameTrigg()
