@@ -126,7 +126,7 @@ void AShooterCharacter::SR_StartJump_Implementation()
 void AShooterCharacter::EndJump()
 {
 	if (!HasAuthority())
-		SR_StartJump();
+		SR_EndJump();
 	
 	if (State == EShooterCharacterState::Jump || State == EShooterCharacterState::Falling)
 	{
@@ -147,9 +147,6 @@ void AShooterCharacter::StartWantsToAim()
 
 void AShooterCharacter::EndWantsToAim()
 {
-	if (State != EShooterCharacterState::Aim)
-		return;
-
 	ShooterCharacterMovement->Safe_bWantsToAim = false;
 }
 
