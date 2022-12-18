@@ -30,8 +30,8 @@ void ALobbyRoomController::SR_SetHost_Implementation(const bool IsHost)
 {
 	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
 
-	if (PS)
-		PS->ClientSetup.bIsHost = !IsHost;
+	if (PS && !IsHost)
+		PS->ClientSetup.bIsHost = true;
 }
 
 void ALobbyRoomController::SR_SendMaxScore_Implementation(const int Score)
