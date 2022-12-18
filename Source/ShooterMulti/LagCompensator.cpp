@@ -31,7 +31,7 @@ void ALagCompensator::SR_StartCompensation_Implementation(float TimeStamp)
 {
 	for (const LabelProfile& Profile : SubscribedLabels)
 	{
-		for (const FSavedComponent_Shooter& Frame : Profile.ComponentsFrames)
+		for (const FSavedFrame_Shooter& Frame : Profile.ComponentsFrames)
 		{
 			if (Frame.TimeStamp >= TimeStamp)
 				return ApplyFrame(Frame);
@@ -43,7 +43,7 @@ void ALagCompensator::ClearOldFrames()
 {
 	for (LabelProfile& Profile : SubscribedLabels)
 	{
-		for (TArray<FSavedComponent_Shooter>::TIterator It(Profile.ComponentsFrames); It; ++It)
+		for (TArray<FSavedFrame_Shooter>::TIterator It(Profile.ComponentsFrames); It; ++It)
 		{
 			if (CurrentTimeStamp - It->TimeStamp < MaxTimeStampOffset)
 				break;
@@ -64,7 +64,7 @@ void ALagCompensator::SaveFrame()
 		
 		const TArray<USceneComponent*>& CompensatedComponents = Profile.GetLabel()->CompensatedComponents;
 
-		TArray<FSavedComponent_Shooter::ComponentState> ComponentsStates;
+		TArray<FSavedFrame_Shooter::ComponentState> ComponentsStates;
 		
 		for (USceneComponent* Compensated : CompensatedComponents)
 			ComponentsStates.Add({Compensated, Compensated->GetComponentTransform()});
@@ -73,7 +73,7 @@ void ALagCompensator::SaveFrame()
 	}
 }
 
-void ALagCompensator::ApplyFrame(const FSavedComponent_Shooter& FrameToApply)
+void ALagCompensator::ApplyFrame(const FSavedFrame_Shooter& FrameToApply)
 {
 	for (auto& ComponentFrame : FrameToApply.ComponentsStates)
 		ComponentFrame.Component->SetWorldTransform(ComponentFrame.Transform, false, nullptr, ETeleportType::TeleportPhysics);

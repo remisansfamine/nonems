@@ -17,7 +17,7 @@ public:
 	ALagCompensator();
 
 private:
-	class FSavedComponent_Shooter 
+	class FSavedFrame_Shooter 
 	{
 	public:
 		struct ComponentState
@@ -35,7 +35,7 @@ private:
 		UCompensatorLabel* Label = nullptr;
 		
 	public:
-		TArray<FSavedComponent_Shooter> ComponentsFrames;
+		TArray<FSavedFrame_Shooter> ComponentsFrames;
 		
 		LabelProfile(UCompensatorLabel* Label) : Label(Label) { }
 		
@@ -53,7 +53,7 @@ private:
 	
 	void ClearOldFrames();
 	void SaveFrame();
-	static void ApplyFrame(const FSavedComponent_Shooter& FrameToApply);
+	static void ApplyFrame(const FSavedFrame_Shooter& FrameToApply);
 
 protected:
 	// Called when the game starts or when spawned
