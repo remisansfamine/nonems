@@ -1,12 +1,12 @@
 #pragma once
 
-#include "GameFramework/GameModeBase.h"
+#include "ShooterMultiGM_Base.h"
 #include "GameFrameWork/PlayerStart.h"
 #include "DeathMatchGM.generated.h"
 
 
 UCLASS()
-class SHOOTERMULTI_API ADeathMatchGM : public AGameModeBase
+class SHOOTERMULTI_API ADeathMatchGM : public AShooterMultiGM_Base
 {
 	GENERATED_BODY()
 	

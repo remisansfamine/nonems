@@ -132,8 +132,11 @@ void ALobbyRoomGS::UpdateCharacters()
 	int LeftStartsIndex = 0;
 	
 	// Respawn characters
-	for (int i = 1; i < PlayerArray.Num(); i++)
+	for (int i = 0; i < PlayerArray.Num(); i++)
 	{
+		if (PlayerArray[i] == SelfController->PlayerState)
+			continue;
+		
 		const ALobbyRoomPS* ClientPlayerState = Cast<ALobbyRoomPS>(PlayerArray[i]);
 		FTransform ClientCharacterTransform;
 

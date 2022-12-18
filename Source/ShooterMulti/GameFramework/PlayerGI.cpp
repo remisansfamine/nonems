@@ -44,6 +44,11 @@ void UPlayerGI::SetMaxTime(const int Time)
 	MaxGameTime = Time;
 }
 
+void UPlayerGI::SetGameMap(const FString& Name)
+{
+	GameLevel = Name;
+}
+
 int UPlayerGI::GetMaxTime() const
 {
 	return MaxGameTime;

@@ -46,41 +46,11 @@ void ALobbyRoomController::SR_SendMaxTime_Implementation(const int Time)
 	GameMode->SetMaxTime(Time);
 }
 
-bool ALobbyRoomController::IsReady()
-{
-	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
-	
-	if (PS)
-		return PS->ClientSetup.bIsReady;
-
-	return false;
-}
-
-bool ALobbyRoomController::IsHost()
-{
-	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
-	
-	if (PS)
-		return PS->ClientSetup.bIsHost;
-
-	return false;
-}
-
 void ALobbyRoomController::SR_ChangeGameMap_Implementation(int Dir)
 {
 	ALobbyRoomGM* LobbyGameMode = GetWorld()->GetAuthGameMode<ALobbyRoomGM>();
 
 	LobbyGameMode->OnMapSelectionChange(Dir);
-}
-
-const FClientSetup ALobbyRoomController::GetClientSetup()
-{
-	ALobbyRoomPS* PS = GetPlayerState<ALobbyRoomPS>();
-
-	if (PS)
-		return PS->ClientSetup;
-
-	return FClientSetup();
 }
 
 FClientSetup ALobbyRoomController::SetClientSetup(const FString& InName, const ETeam& InTeam)

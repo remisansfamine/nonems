@@ -13,12 +13,15 @@ class SHOOTERMULTI_API UPlayerGI : public UGameInstance
 	FClientSetup UserInfo;
 
 	UPROPERTY()
-	int MaxGameScore = 50; //Only on server
+	int MaxGameScore = 1500; //Only on server
 	
 	UPROPERTY()
-	int MaxGameTime = 300; //Only on server
+	int MaxGameTime = 600; //Only on server
 	
 public:
+	UPROPERTY(BlueprintReadOnly)
+	FString GameLevel = "";
+
 	UPlayerGI(const FObjectInitializer& ObjInit);
 	
 	FClientSetup GetUserInfo();
@@ -43,6 +46,9 @@ public:
 	
 	UFUNCTION()
 	void SetMaxTime(const int Time);
+
+	UFUNCTION()
+	void SetGameMap(const FString& Name);
 
 	UFUNCTION(BlueprintCallable)
 	int GetMaxTime() const;

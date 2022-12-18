@@ -1,12 +1,13 @@
 #pragma once
 
+#include "ShooterMultiController_Base.h"
 #include "GameFramework/PlayerController.h"
 #include "../GameFramework/DeathMatchGS.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ShooterController.generated.h"
 
 UCLASS()
-class SHOOTERMULTI_API AShooterController : public APlayerController
+class SHOOTERMULTI_API AShooterController : public AShooterMultiController_Base
 {
 	GENERATED_BODY()
 

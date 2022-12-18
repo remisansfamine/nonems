@@ -3,6 +3,7 @@
 
 #include "ShooterMultiPS_Base.h"
 
+#include "MainMenuPS.h"
 #include "ShooterPS.h"
 #include "UtilsFunctionsLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -23,6 +24,13 @@ void AShooterMultiPS_Base::CopyProperties(APlayerState* PlayerState)
 		{
 			ClientSetup.bIsReady = false;
 			BasePlayerState->ClientSetup = ClientSetup;
+		}
+
+		AMainMenuPS* MenuPlayerState = Cast<AMainMenuPS>(PlayerState);
+		if (MenuPlayerState)
+		{
+			MenuPlayerState->ClientSetup.Team = ETeam::None;
+			MenuPlayerState->ClientSetup.bIsHost = false;
 		}
 	}
 }

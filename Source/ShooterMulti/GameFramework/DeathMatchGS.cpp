@@ -183,10 +183,15 @@ int ADeathMatchGS::GetNbplayer()
 	return PlayerArray.Num();
 }
 
+void ADeathMatchGS::Multi_SetEndHud_Implementation(ETeam Team)
+{
+	OnTeamWin.Broadcast(Team);
+}
+
 void ADeathMatchGS::UpdateEndHud(ETeam Team)
 {
 	GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-	OnTeamWin.Broadcast(Team);
+	Multi_SetEndHud(Team);
 }
 
 void ADeathMatchGS::Reset()

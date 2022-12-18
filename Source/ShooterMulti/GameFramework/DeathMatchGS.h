@@ -3,14 +3,14 @@
 #include "DeathMatchGM.h"
 #include "PlayerGI.h"
 #include "ShooterMultiPS_Base.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "ShooterMulti/LagCompensator.h"
 #include "DeathMatchGS.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateScores);
 
 UCLASS()
-class SHOOTERMULTI_API ADeathMatchGS : public AGameStateBase
+class SHOOTERMULTI_API ADeathMatchGS : public AGameState
 {
 	GENERATED_BODY()
 
@@ -78,6 +78,9 @@ public:
 
 	int GetNbplayer();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetEndHud(ETeam Team);
+	
 	void UpdateEndHud(ETeam Team);
 
 	UFUNCTION(BlueprintCallable)

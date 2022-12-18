@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameMode.h"
-#include "LobbyRoomGM.h"
+#include "ShooterMultiGM_Base.h"
 #include "MainMenuGM.generated.h"
 
 /**

@@ -26,6 +26,10 @@ void ALobbyRoomGM::BeginPlay()
 	const FString MapName = MapNames[LobbyGS->MapIndex];
 	LobbyGS->CurrentMapPreviewName = MapName;
 	LobbyGS->SetNewCurrentMap(MapName, MapPreviewsDico[MapName]->GetPathName());
+	
+	UPlayerGI* GameInstance = GetGameInstance<UPlayerGI>();
+	if (GameInstance)
+		GameInstance->SetGameMap(MapName);
 }
 
 void ALobbyRoomGM::OnMapSelectionChange(int Dir)
@@ -40,6 +44,10 @@ void ALobbyRoomGM::OnMapSelectionChange(int Dir)
 	const FString MapName = MapNames[LobbyGS->MapIndex];
 	LobbyGS->CurrentMapPreviewName = MapName;
 	LobbyGS->SetNewCurrentMap(MapName, MapPreviewsDico[MapName]->GetPathName());
+
+	UPlayerGI* GameInstance = GetGameInstance<UPlayerGI>();
+	if (GameInstance)
+		GameInstance->SetGameMap(MapName);
 }
 
 bool ALobbyRoomGM::ParseServerConfig(FServerConfig& config)

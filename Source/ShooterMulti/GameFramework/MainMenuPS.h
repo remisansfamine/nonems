@@ -15,7 +15,6 @@ class SHOOTERMULTI_API AMainMenuPS : public AShooterMultiPS_Base
 	GENERATED_BODY()
 
 public:
-
 	UFUNCTION(BlueprintCallable)
 	void SetNameInstance();
 };

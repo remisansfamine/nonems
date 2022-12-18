@@ -3,33 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameMode.h"
-#include "ShooterMulti/Controllers/LobbyRoomController.h"
+#include "ShooterMultiGM_Base.h"
 #include "LobbyRoomGM.generated.h"
-
-USTRUCT(BlueprintType)
-struct FServerConfig
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	FString Name = "";
-
-	UPROPERTY(BlueprintReadWrite)
-	FString Password = "";
-
-	UPROPERTY(BlueprintReadWrite)
-	FString UUID = "";
-	
-	UPROPERTY(BlueprintReadWrite)
-	int MaxSlots = 5;
-};
 
 /**
  * 
  */
 UCLASS()
-class SHOOTERMULTI_API ALobbyRoomGM : public AGameMode
+class SHOOTERMULTI_API ALobbyRoomGM : public AShooterMultiGM_Base
 {
 	GENERATED_BODY()
 
