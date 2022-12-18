@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Character|Shooter")
 	UPlayerCameraComponent* Camera;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Character|Shooter")
+	UPROPERTY(ReplicatedUsing=OnRep_StateChange, BlueprintReadOnly, Category = "Character|Shooter")
 	EShooterCharacterState State;
 	
 	UPROPERTY(Replicated, BlueprintReadOnly)
@@ -136,13 +136,7 @@ public:
 	void FinishDisappear() override;
 	
 	/** Handle Aiming replicated from server */
-	UFUNCTION() virtual void OnRep_IsAiming();
-
-	/** Handle Sprinting replicated from server */
-	UFUNCTION() virtual void OnRep_IsSprinting();
-
-	/** Handle Reloading replicated from server */
-	UFUNCTION() virtual void OnRep_IsReloading();
+	UFUNCTION() virtual void OnRep_StateChange(EShooterCharacterState PrevState);
 
 	virtual void OnStartAim();
 	virtual void OnEndAim();

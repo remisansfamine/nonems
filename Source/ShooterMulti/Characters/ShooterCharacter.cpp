@@ -1,10 +1,6 @@
 #include "ShooterCharacter.h"
 
-//#include <Actor.h>
-//#include <Audioclient.h>
-
 #include "../Animations/ShooterCharacterAnim.h"
-#include "../GameFramework/PlayerGI.h"
 #include "../LD/EnemySpawnerButton.h"
 #include "../Movements/ShooterCharacterMovement.h"
 #include "UObject/ConstructorHelpers.h"
@@ -329,54 +325,55 @@ void AShooterCharacter::FinishDisappear()
 		GM->Respawn(PlayerController);
 }
 
-void AShooterCharacter::OnRep_IsAiming()
+void AShooterCharacter::OnRep_StateChange(EShooterCharacterState PrevState)
 {
 	if (!ShooterCharacterMovement)
 		return;
 
-	if (State == EShooterCharacterState::Aim)
+	switch (PrevState)
 	{
+	case EShooterCharacterState::Aim:
+		ShooterCharacterMovement->StopAiming(true);
+
+		break;
+
+	case EShooterCharacterState::Sprint:
+		ShooterCharacterMovement->StopSprinting(true);
+
+		break;
+		
+	case EShooterCharacterState::Reload:
+		ShooterCharacterMovement->StopReloading(true);
+		break;
+
+	default:
+		break;
+	}
+	
+	switch (State)
+	{
+	case EShooterCharacterState::Aim:
 		EndWantsToSprint();
 		EndWantsToReload();
 		ShooterCharacterMovement->StartAiming(true);
-	}
-	else
-		ShooterCharacterMovement->StopAiming(true);
-	
-	ShooterCharacterMovement->bNetworkUpdateReceived = true;
-}
+		break;
 
-void AShooterCharacter::OnRep_IsSprinting()
-{
-	if (!ShooterCharacterMovement)
-		return;
-
-	if (State == EShooterCharacterState::Sprint)
-	{
+	case EShooterCharacterState::Sprint:
 		EndWantsToAim();
 		EndWantsToReload();
 		ShooterCharacterMovement->StartSprinting(true);
-	}
-	else
-		ShooterCharacterMovement->StopSprinting(true);
-	
-	ShooterCharacterMovement->bNetworkUpdateReceived = true;
-}
-
-void AShooterCharacter::OnRep_IsReloading()
-{
-	if (!ShooterCharacterMovement)
-		return;
-	
-	if (State == EShooterCharacterState::Reload)
-	{
+		break;
+		
+	case EShooterCharacterState::Reload:
 		EndWantsToAim();
 		EndWantsToSprint();
 		ShooterCharacterMovement->StartReloading(true);
+		break;
+		
+	default:
+		break;
 	}
-	else
-		ShooterCharacterMovement->StopReloading(true);
-	
+
 	ShooterCharacterMovement->bNetworkUpdateReceived = true;
 }
 
