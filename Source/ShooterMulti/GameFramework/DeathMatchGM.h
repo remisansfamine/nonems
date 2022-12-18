@@ -43,6 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Respawn(APlayerController* PlayerController);
 
+	UFUNCTION(BlueprintCallable)
 	void Quit();
 
 	void UpdateScoreOnDeath(class AHealthCharacter* Killed, class AHealthCharacter* Killer) const;

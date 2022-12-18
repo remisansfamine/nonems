@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/DecalComponent.h"
+#include "Engine/StaticMeshActor.h"
 #include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -205,6 +206,11 @@ bool UWeaponComponent::ShootLaser(AActor* Causer, FHitResult& HitResult, const F
 		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
 		if (SkeletalMeshComponent->IsSimulatingPhysics())
 			SkeletalMeshComponent->AddForceAtLocation(LookDirection * WeaponData.Knockback, HitResult.ImpactPoint, HitResult.BoneName);
+	}
+
+	if (HitResult.Actor->GetClass()->IsChildOf(AStaticMeshActor::StaticClass()) && HitResult.Component->IsSimulatingPhysics())
+	{
+		HitResult.Component->AddImpulseAtLocation(LookDirection * 50000.0f, HitResult.ImpactPoint);
 	}
 	
 	return Cast<ACharacter>(HitResult.Actor) == nullptr; // if collision with non character.
