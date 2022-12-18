@@ -58,8 +58,6 @@ void ADeathMatchGM::UpdateScoreOnDeath(AHealthCharacter* Killed, AHealthCharacte
 
 	const ETeam KilledTeam = Killed->GetTeam();
 
-	const int32 KillerTeamScore = GS->GetScore(KillerTeam);
-
 	int32 KillScore = 0;
 	// Check if team kill another team
 	if (KillerTeam == KilledTeam)
@@ -87,8 +85,10 @@ void ADeathMatchGM::UpdateScoreOnDeath(AHealthCharacter* Killed, AHealthCharacte
 			KillScore = ScoreFromAllyAIKill;
 	}
 
-	GS->SetScore(KillerTeam, KillerTeamScore + KillScore);
-	KillerPS->SetScore(KillerPS->GetScore() + KillScore);
+	GS->SetScore(KillerTeam, GS->GetScore(KillerTeam) + KillScore);
+	
+	if (IsKillerPlayer)
+		KillerPS->SetScore(KillerPS->GetScore() + KillScore);
 }
 
 AActor* ADeathMatchGM::ChoosePlayerStart_Implementation(AController* Player)
