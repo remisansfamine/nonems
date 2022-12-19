@@ -85,7 +85,7 @@ void ADeathMatchGM::UpdateScoreOnDeath(AHealthCharacter* Killed, AHealthCharacte
 			KillScore = ScoreFromAllyAIKill;
 	}
 
-	GS->SetScore(KillerTeam, GS->GetScore(KillerTeam) + KillScore);
+	GS->SetScore(KillerTeam, KillScore);
 	
 	if (IsKillerPlayer)
 		KillerPS->SetScore(KillerPS->GetScore() + KillScore);

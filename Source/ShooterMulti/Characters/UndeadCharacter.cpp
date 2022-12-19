@@ -1,10 +1,13 @@
 #include "UndeadCharacter.h"
+
+#include "UtilsFunctionsLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../Animations/UndeadCharacterAnim.h"
 #include "../GameFramework/DeathMatchGS.h"
 #include "../Controllers/UndeadAIController.h"
 #include "../Weapons/DamageTypePunch.h"
 #include "Components/CapsuleComponent.h"
+#include "Media/Public/IMediaOverlaySample.h"
 
 AUndeadCharacter::AUndeadCharacter()
 {
@@ -62,7 +65,7 @@ void AUndeadCharacter::StartStun()
 	//PlayHitMontage();
 }
 
-void AUndeadCharacter::PlayHitMontage()
+void AUndeadCharacter::PlayHitMontage_Implementation()
 {
 	USkeletalMeshComponent* SkeletalMesh = Cast<USkeletalMeshComponent>(GetMesh());
 
@@ -100,15 +103,17 @@ void AUndeadCharacter::EndPunch()
 		SetState(EUndeadCharacterState::IdleRun);
 }
 
-void AUndeadCharacter::PlayPunchMontage()
+void AUndeadCharacter::PlayPunchMontage_Implementation()
 {
 	USkeletalMeshComponent* SkeletalMesh = Cast<USkeletalMeshComponent>(GetMesh());
-
+	
 	if (SkeletalMesh != nullptr)
 	{
 		UUndeadCharacterAnim* AnimInstance = Cast<UUndeadCharacterAnim>(SkeletalMesh->GetAnimInstance());
 		if (AnimInstance)
+		{
 			AnimInstance->PlayPunchMontage();
+		}
 	}
 }
 
@@ -117,7 +122,9 @@ void AUndeadCharacter::StartDisappear()
 	Super::StartDisappear();
 
 	ADeathMatchGS* GameState = Cast<ADeathMatchGS>(GetWorld()->GetGameState());
-	GameState->RemoveAI();
+
+	if (GameState)
+		GameState->RemoveAI();
 }
 
 void AUndeadCharacter::Reset()

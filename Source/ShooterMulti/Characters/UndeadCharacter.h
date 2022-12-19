@@ -25,8 +25,10 @@ protected:
 	EUndeadCharacterState State;
 	EUndeadCharacterState PrevState;
 
+	UFUNCTION(NetMulticast, Unreliable)
 	void PlayPunchMontage();
 
+	UFUNCTION(NetMulticast, Unreliable)
 	void PlayHitMontage();
 
 	void BeginPlay() override;

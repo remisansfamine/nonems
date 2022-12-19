@@ -73,6 +73,9 @@ void UShooterCharacterAnim::AnimNotify_PushButton(UAnimNotify* Notify) const
 
 void UShooterCharacterAnim::MontageEnded() const
 {
+	if (!ShooterCharacter)
+		return;
+	
 	if (ShooterCharacter->HasAuthority())
 	{
 		if (ShooterCharacter->GetState() == EShooterCharacterState::PushButton ||
