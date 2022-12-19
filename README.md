@@ -1,5 +1,5 @@
 # *NoNem's*: *Online Multiplayer Third person shooter* - **Unreal Engine/C++**
-### ISART DIGITAL GP3, School Project: *Lancelot MARÃ‰CHAL, Sasha LEGRAND, RÃ©mi GINER*  
+### ISART DIGITAL GP3, School Project: *Lancelot MARÉCHAL, Sasha LEGRAND, Rémi GINER*  
 
 <br>
 
@@ -13,21 +13,27 @@ The goal of the project is to make a Third Person Shooter playable in online mul
 
 # Table of contents
 1. [Launching](#launching)
-2. [Features & usage](#features--usage)
+2. [Known issues](#known-issues) 
+3. [Features & usage](#features--usage)
     - [Features](#features)
     - [Controls](#controls)
-3. [How to launch](#how-to-launch)
+4. [How to launch](#how-to-launch)
 5. [Details](#details)
     - [Gameplay replication](#gameplay-replication)
     - [Server Creation](#server)
     - [Sessions & lobby](#lobby-room)
 5. [Reference](#references)
-6. [Versionning](#versionning)
-6. [Autors](#authors)
+6. [Versioning](#versioning)
+6. [Authors](#authors)
 
 # Launching
 To launch the project open with Unreal Engine version 4.27.
-To launch the game in an optimal way, since there is no packaged version, launch from the StartClient.bat.
+Generate the solution from the *ShooterMulti.uproject*, launch the project. From the engine compile C++.
+After that, to launch the game in an optimal way, since there is no packaged version, launch from the StartClient.bat.
+
+## Known issues
+Sometimes server crashes after restarting the game. We couldn't figure out when and what caused it.\
+Sometimes the player camera stays in aiming state after player stop aiming and needs player to aim again to fix it.\
 
 # Features & usage
 
@@ -169,10 +175,10 @@ When you join or create a session, you fall in a *Lobby Room* where you can sele
 - https://docs.unrealengine.com/5.1/en-US/API/Runtime/Engine/GameFramework/ACharacter/
 - https://docs.unrealengine.com/4.27/en-US/InteractiveExperiences/Networking/CharacterMovementComponent/
 
-## Versionning
+## Versioning
 Perforce for the versioning.
 
 # Authors
-* **Lancelot MARÃ‰CHAL**
+* **Lancelot MARÉCHAL**
 * **Sasha LEGRAND**
-* **RÃ©mi GINER**
+* **Rémi GINER**

@@ -115,9 +115,6 @@ void ADeathMatchGS::SetScore(ETeam Team, int32 NewScore)
 		return;
 
 	MaxTeamScore = GameMode->MaxKill;
-
-	UE_LOG(LogTemp, Warning, TEXT("Add Score: %d"), NewScore);
-	UE_LOG(LogTemp, Warning, TEXT("Add Score to: %s"), *UEnum::GetValueAsString(Team));
 	
 	switch (Team)
 	{
