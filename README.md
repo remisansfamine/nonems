@@ -1,5 +1,5 @@
 # *NoNem's*: *Online Multiplayer Third person shooter* - **Unreal Engine/C++**
-### ISART DIGITAL GP3, School Project: *Lancelot MARÃ‰CHAL, Sasha LEGRAND, RÃ©mi GINER*  
+### ISART DIGITAL GP3, School Project: *Lancelot MAR├ëCHAL, Sasha LEGRAND, R├®mi GINER*  
 
 <br>
 
@@ -86,17 +86,49 @@ Finally the server receives the client request and treats it.
 ![PrepMoveFor](Annexes/WantsToServerSide.png)
 </div>
 
+## Lobby Room
+To allow the player to create its own game session or join a friend session, we decided to use the *Advanced Session* plugin.
+
+### **Session preparation**
+Everything starts here. You have the choice to create your game by clicking the "*Host Game*" button or join an existing one by clicking the "*Join Game*" button.
+
+<div style="text-align:center">
+
+![PrepMoveFor](Annexes/MultiMenu.png)
+</div>
+
+If you want to create your game session, you will end up with this window where you can set your server properties (name, password, max players)
+
+<div style="text-align:center">
+
+![PrepMoveFor](Annexes/SessionCreation.png)
+</div>
+
+If you want to join an existing game session, you will end up with this window where all the sessions will be listed. Simply click on the session you want to join.
+
+> **Note:** If the server ask for a password, a window will pop up. We first made the password check on the server for security but this requires the player to have aleady join the session (player is not connected to a server before the session). For a better control, we decided to move the check on the client side (not secure). The solution to avoid that will be to have a main server driving the other server.
+
+<div style="text-align:center">
+
+![PrepMoveFor](Annexes/FindingSession.png)
+</div>
+
+When you join or create a session, you fall in a *Lobby Room* where you can select your team and see the other players of the session. The game master (the one who created the session) can also tweak some parameters like the max score, the max time and the game map. He can also launch the game at any time (only if all the players are set to "*Ready*")
+
+<div style="text-align:center">
+
+![PrepMoveFor](Annexes/FindingSession.png)
+</div>
+
 ## References:
 - https://developer.valvesoftware.com/wiki/Lag_Compensation
 - https://docs.unrealengine.com/5.1/en-US/API/Runtime/Engine/GameFramework/ACharacter/
 - https://docs.unrealengine.com/4.27/en-US/InteractiveExperiences/Networking/CharacterMovementComponent/
 
-
-
 ## Versionning
 Perforce for the versioning.
 
 # Authors
-* **Lancelot MARÃ‰CHAL**
+* **Lancelot MAR├ëCHAL**
 * **Sasha LEGRAND**
-* **RÃ©mi GINER**
+* **R├®mi GINER**
