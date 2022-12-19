@@ -1,5 +1,5 @@
 # *NoNem's*: *Online Multiplayer Third person shooter* - **Unreal Engine/C++**
-### ISART DIGITAL GP3, School Project: *Lancelot MAR├ëCHAL, Sasha LEGRAND, R├®mi GINER*  
+### ISART DIGITAL GP3, School Project: *Lancelot MARÃ‰CHAL, Sasha LEGRAND, RÃ©mi GINER*  
 
 <br>
 
@@ -117,7 +117,7 @@ When you join or create a session, you fall in a *Lobby Room* where you can sele
 
 <div style="text-align:center">
 
-![PrepMoveFor](Annexes/FindingSession.png)
+![PrepMoveFor](Annexes/SessionLobby.png)
 </div>
 
 ## References:
@@ -129,6 +129,6 @@ When you join or create a session, you fall in a *Lobby Room* where you can sele
 Perforce for the versioning.
 
 # Authors
-* **Lancelot MAR├ëCHAL**
+* **Lancelot MARÃ‰CHAL**
 * **Sasha LEGRAND**
-* **R├®mi GINER**
+* **RÃ©mi GINER**
